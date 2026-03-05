@@ -35,11 +35,11 @@ This project uses the following core technology stack:
 * **Language**: [TypeScript](https://www.typescriptlang.org/) (for type safety and maintainability)
 * **Library**: [React](https://react.dev/) (for building the user interface)
 
-The editor is designed to be **embeddable**, meaning the core logic remains decoupled from specific platform APIs (like VS Code or Chrome APIs) through an abstraction layer.
+The project aims for the editor to be **embeddable**, with the core logic decoupled from specific platform APIs (like VS Code or Chrome APIs) through an abstraction layer.
 
 ## Reporting an Issue
 
-If you find a bug or have a question, please check the [existing issues](https://github.com/serverlessworkflow/editor/issues) first. 
+If you find a bug or have a question, please check the [existing issues](https://github.com/serverlessworkflow/editor/issues) first.
 1. Open a new issue using the appropriate template.
 2. Provide a clear description of the problem.
 3. Include steps to reproduce the bug and provide a sample workflow file (`.sw.json` or `.sw.yaml`) if applicable.
