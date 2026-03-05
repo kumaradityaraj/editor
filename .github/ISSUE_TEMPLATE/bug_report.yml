@@ -13,7 +13,7 @@ body:
   - type: textarea
     id: reproduction
     attributes:
-      label: Step to reproduce
+      label: Steps to reproduce
       description: Steps to reproduce the behavior.
       placeholder: |
         1. Open the editor...

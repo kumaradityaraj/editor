@@ -9,7 +9,7 @@ This project is the official, vendor-neutral visual editor for the [Serverless W
 ## Prerequisites
 
 To build and run the editor locally, you will need:
-- **Node.js** (v24.x or higher)
+- **Node.js** (current LTS version; see https://nodejs.org/)
 - **npm** or **pnpm**
 
 ## Building the Project
