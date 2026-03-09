@@ -40,7 +40,15 @@ jobs:
           java-version: 17
           distribution: "temurin"
 
+      - name: Cache Apache RAT
+        uses: actions/cache@v4
+        id: cache-rat
+        with:
+          path: ${{ runner.temp }}/apache-rat-${{ env.APACHE_RAT_VERSION }}.jar
+          key: apache-rat-${{ env.APACHE_RAT_VERSION }}
+
       - name: Download Apache RAT
+        if: steps.cache-rat.outputs.cache-hit != 'true'
         run: |
           set -e
           BASE_URL="https://repo1.maven.org/maven2/org/apache/rat/apache-rat/${APACHE_RAT_VERSION}"
