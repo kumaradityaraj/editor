@@ -1,19 +1,3 @@
-<!--
-   Copyright 2021-Present The Serverless Workflow Specification Authors
-  
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-  
-   http://www.apache.org/licenses/LICENSE-2.0
-  
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
--->
-
 # Contributing to Serverless Workflow Editor
 
 Thank you for your interest in contributing to the CNCF Serverless Workflow Editor! We welcome all types of contributions, including bug reports, feature requests, documentation improvements, and code changes.
@@ -26,7 +10,7 @@ This project is the official, vendor-neutral visual editor for the [Serverless W
 
 To build and run the editor locally, you will need:
 - **Node.js** (current LTS version; see https://nodejs.org/)
-- **npm** or **pnpm**
+- **pnpm**
 
 ## Building the Project
 
@@ -38,10 +22,10 @@ git clone https://github.com/serverlessworkflow/editor.git
 cd editor
 
 # Install dependencies
-npm install
+pnpm install
 
 # Build all packages in the monorepo
-npm run build
+pnpm run build:[dev / prod]
 ```
 
 ## Development Environment
@@ -73,7 +57,7 @@ For new features or architectural changes:
 * **Linting & Formatting**: Follow the existing code style and formatting conventions used in the files you are editing. If the package you are changing defines linting or formatting scripts, run those before submitting code.
 * **Testing**: Ensure that logic changes are covered by tests, and run the relevant test commands for the packages you modify (see their documentation or `package.json`).
 * **Component Design**: Follow functional component patterns and ensure that UI state is managed predictably within the monorepo structure.
-* **New package creation**: If a new package needs to be created, please follow the standards used by the existing packages, including the standard commands `build`, `build-prod`, `test`, `e2e-test`, `lint`
+* **New package creation**: If a new package needs to be created, please follow the standards used by the existing packages, including the standard commands `build:dev`, `build:prod`, `test`, `e2e-test`, `lint`
 
 ## Pull Request Process
 

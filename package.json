@@ -4,17 +4,36 @@
   "private": true,
   "description": "CNCF Serverless Workflow Specification Visual Editor",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/serverlessworkflow/editor",
   "repository": {
     "type": "git",
     "url": "https://github.com/serverlessworkflow/editor.git"
   },
+  "bugs": {
+    "url": "https://github.com/serverlessworkflow/editor/issues"
+  },
+  "type": "module",
   "scripts": {
+    "lint": "eslint ./",
+    "lint:fix": "eslint ./ --fix",
+    "build:prod": "pnpm lint && pnpm -r --stream build:prod",
+    "build:dev": "pnpm -r --stream build:dev",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@serverless-workflow-settings/eslint-config": "workspace:*",
+    "@types/node": "^25.3.3",
+    "eslint": "^9.39.4",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-react": "^7.37.5",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "husky": "^9.1.7"
   },
+  "packageManager": "pnpm@10.31.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=22",
+    "pnpm": "10.31.0"
   }
 }
