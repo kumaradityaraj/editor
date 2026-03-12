@@ -42,5 +42,5 @@ export default defineConfig([
     },
     files: ["**/*.{ts,mts,tsx}"],
   },
-  globalIgnores(["**/dist/", "**/dist-storybook/", "**/node-modules/"]),
+  globalIgnores(["**/dist/", "**/dist-storybook/", "**/node_modules/"]),
 ]);

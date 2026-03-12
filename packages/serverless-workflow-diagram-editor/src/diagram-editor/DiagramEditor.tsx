@@ -24,7 +24,7 @@ export type DiagramEditorProps = {
 };
 
 export const DiagramEditor = (props: DiagramEditorProps) => {
-  //TODO: Implement the actual compoment this is just a placeholder
+  //TODO: Implement the actual component this is just a placeholder
 
   const [alerts, setAlerts] = useState<{ title: string; variant: "success" | "danger"; key: number }[]>([]);
 

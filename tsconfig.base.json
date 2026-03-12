@@ -14,7 +14,7 @@
     /* Language and Environment */
     "lib": ["esnext", "dom", "DOM.Iterable"],
     "target": "ESNext",
-    "types": ["node", "jest"],
+    "types": ["node"],
     "jsx": "react-jsx",
     
     /* Type Checking */

@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/serverlessworkflow/editor/issues"
   },
-  "packageManager": "pnpm@10.29.2",
+  "packageManager": "pnpm@10.31.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -30,7 +30,6 @@
     "build:dev": "pnpm clean && tsc -p tsconfig.json",
     "build:prod": "pnpm lint && pnpm test && pnpm clean && tsc -p tsconfig.json",
     "test": "jest --silent --verbose --passWithNoTests",
-    "test:watch": "jest --watchAll",
     "start": "storybook dev -p 6006",
     "build:storybook": "pnpm clean:storybook && storybook build --output-dir ./dist-storybook"
   },

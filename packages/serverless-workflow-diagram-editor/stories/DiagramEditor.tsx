@@ -15,7 +15,6 @@
  */
 
 import React from "react";
-import "./button.css";
 import { DiagramEditor as SWDiagramEditor, DiagramEditorProps } from "../src/diagram-editor/DiagramEditor";
 
 /** Primary UI component for user interaction */
