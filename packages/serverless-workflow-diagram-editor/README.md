@@ -28,8 +28,11 @@ cd ./packages/serverless-workflow-diagram-editor
 # Install dependencies
 pnpm install
 
-# Build all packages in the monorepo
-pnpm run build:[dev / prod]
+# Build package (development)
+pnpm run build:dev
+
+# Or build package (production))
+pnpm run build:prod
 
 # Build storybook static content for publishing (documentation and demo)
 pnpm run build:storybook

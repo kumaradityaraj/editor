@@ -40,8 +40,11 @@ cd editor
 # Install dependencies
 pnpm install
 
-# Build all packages in the monorepo
-pnpm run build:[dev / prod]
+# Build all packages in the monorepo (development)
+pnpm run build:dev
+
+# Or build all packages in the monorepo (production))
+pnpm run build:prod
 ```
 
 ## Development Environment
