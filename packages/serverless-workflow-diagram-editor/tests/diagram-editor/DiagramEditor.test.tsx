@@ -16,13 +16,19 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { DiagramEditor } from "../../dist/diagram-editor";
+import { DiagramEditor } from "../../src/diagram-editor";
 import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
 
 describe("DiagramEditor Component", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test("Render DiagramEditor Component", async () => {
     const content = "Sample Content";
     const isReadOnly = true;
+    const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
 
     render(<DiagramEditor content={content} isReadOnly={isReadOnly} />);
 
@@ -31,8 +37,6 @@ describe("DiagramEditor Component", () => {
 
     await user.click(button);
 
-    const label = await screen.findByText("Success alert:");
-
-    expect(label).toBeInTheDocument();
+    expect(alertMock).toHaveBeenCalledWith("Hello from Diagram!");
   });
 });
