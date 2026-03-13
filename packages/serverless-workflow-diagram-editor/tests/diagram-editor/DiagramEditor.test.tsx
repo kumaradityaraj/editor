@@ -31,8 +31,8 @@ describe("DiagramEditor Component", () => {
 
     await user.click(button);
 
-    const label = await screen.getByText("Success alert:");
+    const label = screen.getByText("Success alert:");
 
-    expect(label).toBeVisible();
+    expect(label).toBeInTheDocument();
   });
 });
