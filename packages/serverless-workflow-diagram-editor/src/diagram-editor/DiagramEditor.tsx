@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
-import { Alert, AlertActionCloseButton, AlertGroup, Button, Content } from "@patternfly/react-core";
-import "@patternfly/react-core/dist/styles/base.css";
+import React, { CSSProperties, useState } from "react";
+
+const clickmeBtnStyle: CSSProperties={
+      border: "2px solid blue",
+      borderRadius: "10px",
+      fontSize: "large",
+      fontWeight: "500",
+      background: "blue",
+      color: "white",
+}
 
 export type DiagramEditorProps = {
   content: string;
@@ -26,37 +33,12 @@ export type DiagramEditorProps = {
 export const DiagramEditor = (props: DiagramEditorProps) => {
   //TODO: Implement the actual component this is just a placeholder
 
-  const [alerts, setAlerts] = useState<{ title: string; variant: "success" | "danger"; key: number }[]>([]);
-
-  const addAlert = (title: string, variant: "success" | "danger") => {
-    setAlerts((prev) => [...prev, { title, variant, key: Date.now() }]);
-  };
-
-  const removeAlert = (key: number) => {
-    setAlerts((prev) => prev.filter((alert) => alert.key !== key));
-  };
-
   return (
     <>
-      <Content>
         <h1>Hello from DiagramEditor component!</h1>
         <p>Read-only: {props.isReadOnly ? "true" : "false"}</p>
         <p>Content: {props.content}</p>
-        <Button onClick={() => addAlert("Hello from Patternfly!", "success")}>Click me!</Button>
-        <AlertGroup isToast>
-          {alerts.map(({ title, variant, key }) => (
-            <Alert
-              variant={variant}
-              title={title}
-              key={key}
-              timeout={3000}
-              actionClose={<AlertActionCloseButton onClose={() => removeAlert(key)} />}
-            >
-              Patternfly is alive.
-            </Alert>
-          ))}
-        </AlertGroup>
-      </Content>
+        <button style={clickmeBtnStyle} onClick={() => alert("Hello from Diagram!")}>Click me!</button>
     </>
   );
 };
