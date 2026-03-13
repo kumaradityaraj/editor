@@ -16,7 +16,7 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { DiagramEditor } from "../../dist/diagram-editor";
+import { DiagramEditor } from "../../src/diagram-editor";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 
