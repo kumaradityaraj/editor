@@ -21,6 +21,10 @@ import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 
 describe("DiagramEditor Component", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test("Render DiagramEditor Component", async () => {
     const content = "Sample Content";
     const isReadOnly = true;
@@ -34,7 +38,5 @@ describe("DiagramEditor Component", () => {
     await user.click(button);
 
     expect(alertMock).toHaveBeenCalledWith("Hello from Diagram!");
-
-    alertMock.mockRestore();
   });
 });
