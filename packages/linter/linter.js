@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import sharedConfig from "@serverless-workflow-settings/eslint-config";
+import { spawn } from "child_process";
 
-export default [
-  ...sharedConfig,
-  {
-    // Add app-specific overrides here
-  },
-];
+const args = ["--config", "oxlintrc.json", ...process.argv.slice(2)];
+
+const oxlint = spawn("oxlint", args, {
+  stdio: "inherit",
+});
+
+oxlint.on("exit", (code) => {
+  process.exit(code ?? 0);
+});
