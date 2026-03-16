@@ -2,7 +2,8 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
-  - '@swc/core'
+  - "@swc/core"
+  - chromedriver
   - edgedriver
   - esbuild
   - geckodriver
