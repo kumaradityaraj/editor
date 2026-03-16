@@ -3,38 +3,39 @@
   "version": "0.0.0",
   "private": true,
   "description": "CNCF Serverless Workflow Specification Visual Editor",
-  "license": "Apache-2.0",
   "homepage": "https://github.com/serverlessworkflow/editor",
+  "bugs": {
+    "url": "https://github.com/serverlessworkflow/editor/issues"
+  },
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/serverlessworkflow/editor.git"
   },
-  "bugs": {
-    "url": "https://github.com/serverlessworkflow/editor/issues"
-  },
   "type": "module",
   "scripts": {
-    "lint": "eslint ./",
-    "lint:fix": "eslint ./ --fix",
+    "format": "pnpm --filter @serverless-workflow-settings/linter format",
+    "format:check": "pnpm --filter @serverless-workflow-settings/linter format:check",
     "build:prod": "pnpm lint && pnpm -r --stream build:prod",
     "build:dev": "pnpm -r --stream build:dev",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@serverless-workflow-settings/eslint-config": "workspace:*",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1",
-    "husky": "^9.1.7"
+    "@serverless-workflow-settings/linter": "workspace:*",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.56.0",
+    "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.31.0",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
+      "oxfmt"
+    ]
+  },
   "engines": {
     "node": ">=22",
     "pnpm": "10.31.0"
-  }
+  },
+  "packageManager": "pnpm@10.31.0"
 }

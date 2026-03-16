@@ -1,0 +1,27 @@
+{
+  "name": "@serverless-workflow-settings/linter",
+  "version": "1.0.0",
+  "private": true,
+  "bin": {
+    "linter": "./linter.js"
+  },
+  "files": [
+    "oxlintrc.json",
+    "linter.js"
+  ],
+  "type": "module",
+  "main": "oxlintrc.json",
+  "scripts": {
+    "lint": "oxlint --config oxlintrc.json",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
+  },
+  "dependencies": {
+    "oxfmt": "^0.41.0",
+    "oxlint": "^0.15.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

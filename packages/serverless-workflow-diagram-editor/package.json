@@ -2,29 +2,27 @@
   "name": "serverless-workflow-diagram-editor",
   "version": "1.0.0",
   "description": "React serverless workflow diagram component",
-  "license": "Apache-2.0",
   "keywords": [],
   "homepage": "https://github.com/serverlessworkflow/editor",
+  "bugs": {
+    "url": "https://github.com/serverlessworkflow/editor/issues"
+  },
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/serverlessworkflow/editor.git"
   },
-  "bugs": {
-    "url": "https://github.com/serverlessworkflow/editor/issues"
-  },
-  "packageManager": "pnpm@10.31.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ./",
-    "lint:fix": "eslint ./ --fix",
+    "lint": "linter src/ stories/",
     "clean": "rimraf ./dist",
     "clean:storybook": "rimraf ./dist-storybook",
     "build:dev": "pnpm clean && tsc -p tsconfig.json",
@@ -32,10 +30,6 @@
     "test": "vitest run --passWithNoTests",
     "start": "storybook dev -p 6006 --no-open",
     "build:storybook": "pnpm clean:storybook && storybook build --output-dir ./dist-storybook"
-  },
-  "peerDependencies": {
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.6",
@@ -45,7 +39,7 @@
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@chromatic-com/storybook": "^5.0.1",
-    "@serverless-workflow-settings/eslint-config": "workspace:*",
+    "@serverless-workflow-settings/linter": "workspace:*",
     "@storybook/addon-a11y": "^10.2.19",
     "@storybook/addon-docs": "^10.2.19",
     "@storybook/addon-vitest": "^10.2.19",
@@ -71,5 +65,10 @@
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.0"
-  }
+  },
+  "peerDependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "packageManager": "pnpm@10.31.0"
 }
