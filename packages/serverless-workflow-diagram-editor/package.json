@@ -32,12 +32,6 @@
     "build:storybook": "pnpm clean:storybook && storybook build --output-dir ./dist-storybook"
   },
   "devDependencies": {
-    "@babel/cli": "catalog:",
-    "@babel/core": "catalog:",
-    "@babel/preset-env": "catalog:",
-    "@babel/preset-flow": "catalog:",
-    "@babel/preset-react": "catalog:",
-    "@babel/preset-typescript": "catalog:",
     "@chromatic-com/storybook": "catalog:",
     "@serverlessworkflow-toolings/linter": "workspace:*",
     "@storybook/addon-a11y": "catalog:",
@@ -51,12 +45,8 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitest/browser-webdriverio": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@vitest/ui": "catalog:",
-    "eslint-plugin-storybook": "catalog:",
-    "globals": "catalog:",
-    "jiti": "catalog:",
     "jsdom": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -69,6 +59,5 @@
   "peerDependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
-  },
-  "packageManager": "pnpm@10.31.0"
+  }
 }
