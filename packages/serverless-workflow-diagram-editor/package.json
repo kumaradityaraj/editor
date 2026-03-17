@@ -1,6 +1,6 @@
 {
-  "name": "serverless-workflow-diagram-editor",
-  "version": "1.0.0",
+  "name": "@serverlessworkflow/diagram-editor",
+  "version": "0.0.0",
   "description": "React serverless workflow diagram component",
   "keywords": [],
   "homepage": "https://github.com/serverlessworkflow/editor",
