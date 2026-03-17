@@ -1,5 +1,5 @@
 {
-  "name": "@serverless-workflow-settings/linter",
+  "name": "@serverlessworkflow-toolings/linter",
   "version": "1.0.0",
   "private": true,
   "bin": {

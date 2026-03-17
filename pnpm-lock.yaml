@@ -122,7 +122,7 @@ importers:
 
   .:
     devDependencies:
-      '@serverless-workflow-settings/linter':
+      '@serverlessworkflow-toolings/linter':
         specifier: workspace:*
         version: link:packages/linter
       husky:
@@ -177,7 +177,7 @@ importers:
       '@chromatic-com/storybook':
         specifier: 'catalog:'
         version: 5.0.1(storybook@10.2.19(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
-      '@serverless-workflow-settings/linter':
+      '@serverlessworkflow-toolings/linter':
         specifier: workspace:*
         version: link:../linter
       '@storybook/addon-a11y':
