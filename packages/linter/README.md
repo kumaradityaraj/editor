@@ -14,7 +14,7 @@
    limitations under the License.
 -->
 
-# @serverless-workflow-settings/linter
+# @serverlessworkflow-toolings/linter
 
 Shared linting and formatting configuration for the Serverless Workflow Editor monorepo.
 
@@ -33,7 +33,7 @@ This package provides centralized configuration for Oxlint and Oxfmt
     "lint": "linter src/ stories/"
   },
   "devDependencies": {
-    "@serverless-workflow-settings/linter": "workspace:*"
+    "@serverlessworkflow-toolings/linter": "workspace:*"
   }
 }
 ```
@@ -44,6 +44,6 @@ To extend the configuration in a specific package, create a local `oxlintrc.json
 
 ```json
 {
-  "extends": ["node_modules/@serverless-workflow-settings/linter/oxlintrc.json"]
+  "extends": ["node_modules/@serverlessworkflow-toolings/linter/oxlintrc.json"]
 }
 ```
