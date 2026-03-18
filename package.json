@@ -24,7 +24,6 @@
     "@serverlessworkflow-toolings/linter": "workspace:*",
     "husky": "catalog:",
     "lint-staged": "catalog:",
-    "oxfmt": "catalog:",
     "typescript": "catalog:"
   },
   "lint-staged": {

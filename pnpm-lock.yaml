@@ -101,9 +101,6 @@ importers:
       lint-staged:
         specifier: 'catalog:'
         version: 16.4.0
-      oxfmt:
-        specifier: 'catalog:'
-        version: 0.41.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

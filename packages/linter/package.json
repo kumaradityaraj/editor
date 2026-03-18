@@ -13,7 +13,6 @@
     "formatter.js"
   ],
   "type": "module",
-  "main": "oxlintrc.json",
   "scripts": {
     "lint": "linter",
     "format": "formatter",

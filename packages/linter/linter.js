@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { spawn } from "child_process";
 import { existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import { execSync } from "child_process";
 
 const configFilename = ".oxlintrc.json";
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,17 +30,15 @@ const configPath = join(__dirname, configFilename);
 const selectedConfig = existsSync(localConfigPath) ? localConfigPath : configPath;
 
 const args = ["--config", selectedConfig, ...process.argv.slice(2)];
+const command = [oxlintPath, ...args].join(" ");
 
-const oxlint = spawn(oxlintPath, args, {
-  cwd: process.cwd(),
-  stdio: "inherit",
-});
-
-oxlint.on("error", (err) => {
-  console.error("Failed to start oxlint:", err.message);
+try {
+  execSync(command, {
+    stdio: "inherit",
+    cwd: process.cwd(),
+  });
+} catch {
+  console.info("[Linter] Error.");
   process.exit(1);
-});
-
-oxlint.on("exit", (code) => {
-  process.exit(code ?? 0);
-});
+}
+console.info("[Linter] Done.");
