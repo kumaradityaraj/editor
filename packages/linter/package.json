@@ -1,5 +1,5 @@
 {
-  "name": "@serverlessworkflow/linter",
+  "name": "@serverlessworkflow-toolings/linter",
   "version": "0.0.0",
   "private": true,
   "bin": {
@@ -13,17 +13,18 @@
     "formatter.js"
   ],
   "type": "module",
+  "main": ".oxlintrc.json",
   "scripts": {
     "lint": "linter",
     "format": "formatter",
     "format:check": "formatter --check"
   },
   "dependencies": {
-    "oxfmt": "^0.41.0",
-    "oxlint": "^1.56.0"
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "typescript": "^5.7.2"
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
   }
 }
