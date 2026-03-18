@@ -14,8 +14,8 @@
   },
   "type": "module",
   "scripts": {
-    "format": "pnpm --filter @serverlessworkflow-toolings/linter format",
-    "format:check": "pnpm --filter @serverlessworkflow-toolings/linter format:check",
+    "format": "formatter",
+    "format:check": "formatter --check",
     "build:prod": "pnpm -r --stream --if-present build:prod",
     "build:dev": "pnpm -r --stream --if-present build:dev",
     "prepare": "husky"
@@ -29,7 +29,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
-      "oxfmt"
+      "pnpm format"
     ]
   },
   "engines": {
