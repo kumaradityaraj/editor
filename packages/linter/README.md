@@ -40,10 +40,10 @@ This package provides centralized configuration for Oxlint and Oxfmt
 
 ## Extending Configuration
 
-To extend the configuration in a specific package, create a local `oxlintrc.json`:
+To extend the configuration in a specific package, create a local `.oxlintrc.json`:
 
 ```json
 {
-  "extends": ["node_modules/@serverlessworkflow-toolings/linter/oxlintrc.json"]
+  "extends": ["node_modules/@serverlessworkflow-toolings/linter/.oxlintrc.json"]
 }
 ```
