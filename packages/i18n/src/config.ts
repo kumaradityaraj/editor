@@ -19,7 +19,7 @@ import { initReactI18next } from "react-i18next";
 import { resources, defaultNS } from "./resources";
 
 export function setupI18n(instance: i18n) {
-  instance.use(initReactI18next).init({
+  return instance.use(initReactI18next).init({
     resources,
     defaultNS,
     fallbackLng: "en",
@@ -27,6 +27,4 @@ export function setupI18n(instance: i18n) {
       escapeValue: false,
     },
   });
-
-  return instance;
 }
