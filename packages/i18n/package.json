@@ -17,10 +17,13 @@
     "build": "pnpm clean && tsc -p tsconfig.json",
     "build:prod": "pnpm run build"
   },
+  "dependencies": {
+    "@serverlessworkflow/i18n": "workspace:*",
+    "i18next": "catalog:",
+    "react-i18next": "catalog:"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
-    "i18next": "catalog:",
-    "react-i18next": "catalog:",
     "rimraf": "catalog:"
   }
 }

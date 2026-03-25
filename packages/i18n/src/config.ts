@@ -18,13 +18,24 @@ import type { i18n } from "i18next";
 import { initReactI18next } from "react-i18next";
 import { resources, defaultNS } from "./resources";
 
-export function setupI18n(instance: i18n) {
-  return instance.use(initReactI18next).init({
+export async function setupI18n(instance: i18n) {
+  if (instance.isInitialized) {
+    return instance;
+  }
+
+  await instance.use(initReactI18next).init({
     resources,
     defaultNS,
     fallbackLng: "en",
+
     interpolation: {
       escapeValue: false,
     },
+
+    react: {
+      useSuspense: false,
+    },
   });
+
+  return instance;
 }

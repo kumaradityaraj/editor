@@ -38,7 +38,9 @@
     "build:storybook": "pnpm clean:storybook && storybook build --output-dir ./dist-storybook"
   },
   "dependencies": {
-    "@serverlessworkflow/i18n": "workspace:*"
+    "@serverlessworkflow/i18n": "workspace:*",
+    "i18next": "catalog:",
+    "react-i18next": "catalog:"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "catalog:",
@@ -55,13 +57,11 @@
     "@types/react-dom": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@vitest/ui": "catalog:",
-    "i18next": "catalog:",
     "jsdom": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-i18next": "catalog:",
     "rimraf": "catalog:",
     "storybook": "catalog:",
     "vite": "catalog:",
