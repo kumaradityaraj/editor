@@ -29,6 +29,8 @@ catalog:
   vite: ^6.0.0
   vite-tsconfig-paths: ^6.1.1
   vitest: ^4.1.0
+  i18next: ^25.10.4
+  react-i18next: ^16.6.1
 cleanupUnusedCatalogs: true
 onlyBuiltDependencies:
   - "@swc/core"
