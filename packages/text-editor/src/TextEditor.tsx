@@ -55,6 +55,9 @@ export const TextEditor = ({
       readOnly: isReadOnly,
       automaticLayout: true,
       renderLineHighlight: "none",
+      ...(resolvedColorMode && {
+        theme: resolvedColorMode === "dark" ? "vs-dark" : "vs",
+      }),
     });
 
     editorRef.current = editor;
