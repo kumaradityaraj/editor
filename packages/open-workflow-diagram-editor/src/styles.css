@@ -21,11 +21,15 @@
 @import 'sonner/dist/styles.css';
 
 @layer base {
-  *,
-  ::before,
-  ::after,
-  ::backdrop{
-    --tw-border-style: solid
+  .dec-root,
+  .dec-root *,
+  .dec-root::before,
+  .dec-root::after,
+  .dec-root::backdrop,
+  .dec-root *::before,
+  .dec-root *::after,
+  .dec-root *::backdrop {
+    --tw-border-style: solid;
   }
 }
 
