@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { render } from "@testing-library/react";
+import { render, renderHook, act } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useResolvedColorMode } from "../../src/hooks/useResolvedColorMode";
 
 import {
   mockEditorCreate,
@@ -225,6 +226,98 @@ describe("TextEditor", () => {
       rerenderEditor({ colorMode: "dark" });
 
       expect(mockEditorCreate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("useResolvedColorMode", () => {
+    let mediaQueryListeners: Array<(event: MediaQueryListEvent) => void>;
+    let mediaQueryList: {
+      matches: boolean;
+      addEventListener: ReturnType<typeof vi.fn>;
+      removeEventListener: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      mediaQueryListeners = [];
+
+      mediaQueryList = {
+        matches: false,
+        addEventListener: vi.fn((_: string, listener: (event: MediaQueryListEvent) => void) => {
+          mediaQueryListeners.push(listener);
+        }),
+        removeEventListener: vi.fn(),
+      };
+
+      Object.defineProperty(window, "matchMedia", {
+        writable: true,
+        value: vi.fn(() => mediaQueryList),
+      });
+    });
+
+    it("resolves system mode to light when the system prefers light", () => {
+      mediaQueryList.matches = false;
+
+      const { result } = renderHook(() => useResolvedColorMode("system"));
+
+      expect(result.current).toBe("light");
+    });
+
+    it("resolves system mode to dark when the system prefers dark", () => {
+      mediaQueryList.matches = true;
+
+      const { result } = renderHook(() => useResolvedColorMode("system"));
+
+      expect(result.current).toBe("dark");
+    });
+
+    it("updates when the system color mode changes", () => {
+      mediaQueryList.matches = false;
+
+      const { result } = renderHook(() => useResolvedColorMode("system"));
+
+      expect(result.current).toBe("light");
+
+      act(() => {
+        mediaQueryList.matches = true;
+
+        mediaQueryListeners.forEach((listener) =>
+          listener({ matches: true } as MediaQueryListEvent),
+        );
+      });
+
+      expect(result.current).toBe("dark");
+
+      act(() => {
+        mediaQueryList.matches = false;
+
+        mediaQueryListeners.forEach((listener) =>
+          listener({ matches: false } as MediaQueryListEvent),
+        );
+      });
+
+      expect(result.current).toBe("light");
+    });
+
+    it("subscribes to system color mode changes", () => {
+      renderHook(() => useResolvedColorMode("system"));
+
+      expect(mediaQueryList.addEventListener).toHaveBeenCalledWith("change", expect.any(Function));
+    });
+
+    it("removes the system color mode listener on unmount", () => {
+      const { unmount } = renderHook(() => useResolvedColorMode("system"));
+
+      const listener = mediaQueryList.addEventListener.mock.calls[0][1];
+
+      unmount();
+
+      expect(mediaQueryList.removeEventListener).toHaveBeenCalledWith("change", listener);
+    });
+
+    it("uses the server fallback for system mode", () => {
+      const { result } = renderHook(() => useResolvedColorMode("system"));
+
+      expect(result.current).toBe("light");
     });
   });
 });
