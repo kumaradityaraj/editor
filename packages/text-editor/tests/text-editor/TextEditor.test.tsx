@@ -26,6 +26,7 @@ import {
   mockModel,
   mockSetModelLanguage,
   simulateEditorContentChange,
+  mockSetTheme,
 } from "../__mocks__/monaco-editor";
 import { TextEditor, type TextEditorProps } from "../../src/TextEditor";
 
@@ -183,6 +184,47 @@ describe("TextEditor", () => {
       );
 
       expect(mockEditorCreate).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("theme", () => {
+    it("uses the light Monaco theme for light color mode", () => {
+      renderEditor({ colorMode: "light" });
+
+      expect(mockSetTheme).toHaveBeenCalledTimes(1);
+      expect(mockSetTheme).toHaveBeenCalledWith("vs");
+    });
+
+    it("uses the dark Monaco theme for dark color mode", () => {
+      renderEditor({ colorMode: "dark" });
+
+      expect(mockSetTheme).toHaveBeenCalledTimes(1);
+      expect(mockSetTheme).toHaveBeenCalledWith("vs-dark");
+    });
+
+    it("updates the Monaco theme when color mode changes", () => {
+      const { rerenderEditor } = renderEditor({
+        colorMode: "light",
+      });
+
+      expect(mockSetTheme).toHaveBeenCalledWith("vs");
+
+      mockSetTheme.mockClear();
+
+      rerenderEditor({ colorMode: "dark" });
+
+      expect(mockSetTheme).toHaveBeenCalledTimes(1);
+      expect(mockSetTheme).toHaveBeenCalledWith("vs-dark");
+    });
+
+    it("does not recreate Monaco when color mode changes", () => {
+      const { rerenderEditor } = renderEditor({
+        colorMode: "light",
+      });
+
+      rerenderEditor({ colorMode: "dark" });
+
+      expect(mockEditorCreate).toHaveBeenCalledTimes(1);
     });
   });
 });
