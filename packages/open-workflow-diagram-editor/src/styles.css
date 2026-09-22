@@ -36,7 +36,7 @@
   side-panel,
   react-flow-overrides,
   custom-nodes,
-  custom-edge-labels,
+  custom-edge-labels;
 
 @custom-variant dark (&:where(.dec-root.dark, .dec-root.dark *));
 
