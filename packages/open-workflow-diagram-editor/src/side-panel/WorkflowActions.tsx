@@ -30,7 +30,7 @@ import type { Specification } from "@openworkflowspec/sdk";
 export function WorkflowActions({ model }: { model: Specification.Workflow }): React.JSX.Element {
   const { t } = useI18n();
   const [isCopied, setIsCopied] = React.useState(false);
-  const [downloadedType, setDownloadedType] = React.useState<"mermaid" | "png" | null>(null);
+  const [downloadingType, setDownloadingType] = React.useState<"mermaid" | "png" | null>(null);
   const copyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const downloadTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const reactFlowInstance = useReactFlow();
@@ -76,14 +76,14 @@ export function WorkflowActions({ model }: { model: Specification.Workflow }): R
       const mermaidCode = exportToMermaid(model);
       const filename = `${sanitizeFilename(model.document?.name)}.mmd`;
       downloadFile(mermaidCode, filename);
-      setDownloadedType("mermaid");
+      setDownloadingType("mermaid");
 
       if (downloadTimeoutRef.current) {
         clearTimeout(downloadTimeoutRef.current);
       }
 
       downloadTimeoutRef.current = setTimeout(() => {
-        setDownloadedType(null);
+        setDownloadingType(null);
         downloadTimeoutRef.current = null;
       }, 2000);
     } catch (error) {
@@ -103,14 +103,14 @@ export function WorkflowActions({ model }: { model: Specification.Workflow }): R
         diagramDomNode,
       );
 
-      setDownloadedType("png");
+      setDownloadingType("png");
 
       if (downloadTimeoutRef.current) {
         clearTimeout(downloadTimeoutRef.current);
       }
 
       downloadTimeoutRef.current = setTimeout(() => {
-        setDownloadedType(null);
+        setDownloadingType(null);
         downloadTimeoutRef.current = null;
       }, 2000);
     } catch (error) {
@@ -140,9 +140,9 @@ export function WorkflowActions({ model }: { model: Specification.Workflow }): R
         size="sm"
         className="dec:cursor-pointer"
       >
-        {downloadedType === "mermaid" ? <Import /> : <Download />}
-        {downloadedType === "mermaid"
-          ? t("sidebar.export.downloaded")
+        {downloadingType === "mermaid" ? <Import /> : <Download />}
+        {downloadingType === "mermaid"
+          ? t("sidebar.export.downloading")
           : t("sidebar.exportMermaid.download")}
       </Button>
       <Button
@@ -152,11 +152,11 @@ export function WorkflowActions({ model }: { model: Specification.Workflow }): R
         className="dec:cursor-pointer"
         disabled={isExporting}
       >
-        {downloadedType === "png" ? <Import /> : <FileImage />}
+        {downloadingType === "png" ? <Import /> : <FileImage />}
         {isExporting
-          ? t("sidebar.exportPng.downloading")
-          : downloadedType === "png"
-            ? t("sidebar.export.downloaded")
+          ? t("sidebar.export.downloading")
+          : downloadingType === "png"
+            ? t("sidebar.export.downloading")
             : t("sidebar.exportPng.download")}
       </Button>
     </>

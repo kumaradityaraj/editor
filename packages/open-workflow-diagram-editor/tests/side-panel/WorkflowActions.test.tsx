@@ -84,7 +84,7 @@ describe("WorkflowActions", () => {
     await user.click(downloadButton);
 
     expect(downloadSpy).toHaveBeenCalledWith(MERMAID_CODE, "test-wf.mmd");
-    expect(screen.getByRole("button", { name: "Downloaded" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Downloading" })).toBeInTheDocument();
   });
 
   it("should handle download failure", async () => {
@@ -112,7 +112,7 @@ describe("WorkflowActions", () => {
     renderWithProviders(<WorkflowActions model={model!} />, { model, isExporting: true });
 
     const pngButton = screen.getByRole("button", {
-      name: "Downloading...",
+      name: "Downloading",
     });
     expect(pngButton).toBeDisabled();
   });
@@ -129,7 +129,7 @@ describe("WorkflowActions", () => {
     await vi.waitFor(() => expect(exportSpy).toHaveBeenCalled());
 
     expect(exportSpy).toHaveBeenCalledWith(expect.anything(), "test-wf.png", null);
-    expect(screen.getByRole("button", { name: "Downloaded" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Downloading" })).toBeInTheDocument();
     expect(setIsExporting).toHaveBeenCalledWith(true);
     expect(setIsExporting).toHaveBeenLastCalledWith(false);
   });
