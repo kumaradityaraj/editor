@@ -16,8 +16,16 @@
 
 /* layer order (Priority: lowest -> highest) */
 
+@layer base,
+  side-panel,
+  react-flow-overrides,
+  custom-nodes,
+  custom-edge-labels;
+
 @import 'tailwindcss' prefix(dec);
 @import './components/ui/shadcn.css';
+
+@custom-variant dark (&:where(.dec-root.dark, .dec-root.dark *));
 
 @layer base {
   .dec-root,
@@ -32,13 +40,6 @@
   }
 }
 
-@layer base,
-  side-panel,
-  react-flow-overrides,
-  custom-nodes,
-  custom-edge-labels;
-
-@custom-variant dark (&:where(.dec-root.dark, .dec-root.dark *));
 
 /*
   This file defines global styles for the editor.
