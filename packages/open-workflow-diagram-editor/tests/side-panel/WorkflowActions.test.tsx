@@ -27,11 +27,9 @@ import * as download from "../../src/lib/download";
 import * as exportPng from "../../src/lib/exportPng";
 
 describe("WorkflowActions", () => {
-  const toastMock = vi.fn();
   const MERMAID_CODE = "mermaid code";
 
   afterEach(() => {
-    toastMock.mockClear();
     vi.restoreAllMocks();
   });
 
@@ -52,7 +50,7 @@ describe("WorkflowActions", () => {
     expect(copySpy).toHaveBeenCalledWith(MERMAID_CODE);
   });
 
-  it("should show error toast when clipboard copy fails", async () => {
+  it("should show error message when clipboard copy fails", async () => {
     const user = userEvent.setup();
     const { model } = parseWorkflow(WORKFLOW_WITH_METADATA_JSON);
     vi.spyOn(clipboard, "copyToClipboard").mockRejectedValue(new Error("Clipboard error"));
@@ -69,7 +67,7 @@ describe("WorkflowActions", () => {
     expect(clipboard.copyToClipboard).toHaveBeenCalledWith(MERMAID_CODE);
   });
 
-  it("should call downloadMermaidFile and show success toast when download button is clicked", async () => {
+  it("should call downloadMermaidFile and show Downloading when download button is clicked", async () => {
     const user = userEvent.setup();
     const { model } = parseWorkflow(WORKFLOW_WITH_METADATA_JSON);
     const downloadSpy = vi.spyOn(download, "downloadFile").mockImplementation(() => {});
