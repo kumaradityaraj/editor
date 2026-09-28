@@ -820,8 +820,24 @@ function buildOneOfVariants(
   // each variant individually so that semantically distinct modes (e.g. URI Template vs
   // RuntimeExpression for `source`, `dataschema`, `time`) are surfaced as separate selectable
   // options in the form rather than collapsed to a single anonymous string input.
+  function shouldPreserveStringVariants(resolvedList: ResolvedVariant[]): boolean {
+    const stringVariants = resolvedList.filter((item) => item.kind === "string");
+
+    if (stringVariants.length < 2) return false;
+
+    const signatures = stringVariants.map((item) =>
+      JSON.stringify({
+        pattern: item.resolved.pattern,
+        format: item.resolved.format,
+        enum: item.resolved.enum,
+      }),
+    );
+
+    return new Set(signatures).size > 1;
+  }
+
   const allStrings = resolvedList.every((item) => item.kind === "string");
-  if (allStrings && resolvedList.length > 1) {
+  if ((allStrings && resolvedList.length > 1) || shouldPreserveStringVariants(resolvedList)) {
     return resolvedList.map((item) => ({
       label: item.label,
       fields: item.fields,
