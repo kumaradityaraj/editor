@@ -391,9 +391,9 @@ describe("schemaToFormFields labels", () => {
        "      variant "Literal Error Type"",
        "        raise.error.type  one-of  "Literal Error Type"",
        "          variant "Literal URI Template"",
-       "            raise.error.type  string  "Literal URI Template"  ph=https://example.com/api/{id}",
+       "            raise.error.type  string  "Literal URI Template"",
        "          variant "Literal URI"",
-       "            raise.error.type  string  "Literal URI"  ph=https://example.com/api/{id}",
+       "            raise.error.type  string  "Literal URI"",
        "      variant "Expression Error Type"",
        "        raise.error.type  string  "Expression Error Type"  ph=\${...}",
        "    raise.error.status  number  "Status"",
@@ -431,7 +431,7 @@ describe("schemaToFormFields labels", () => {
        "  variant "Duration Expression"",
        "    wait  string  "Duration Expression"  ph=\${...}",
        "  variant "Duration Literal"",
-       "    wait  string  "Duration Literal"",
+       "    wait  duration  "Duration Literal"",
      ]
    `);
   });
@@ -458,6 +458,6 @@ describe("schemaToFormFields URI placeholders", () => {
 
     // Non-empty, so `not.toContain` is a real assertion rather than a vacuous one.
     expect(placeholders.length).toBeGreaterThan(0);
-    expect(placeholders).toContain(API_ENDPOINT_EXAMPLE);
+    expect(placeholders).not.toContain(API_ENDPOINT_EXAMPLE);
   });
 });

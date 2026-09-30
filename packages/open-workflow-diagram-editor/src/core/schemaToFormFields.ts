@@ -114,6 +114,7 @@ export interface JsonField extends FieldBase {
 export interface OneOfField extends FieldBase {
   kind: "one-of";
   variants: OneOfVariant[];
+  sentinelPath?: string;
 }
 
 export interface OneOfVariant {
@@ -648,7 +649,7 @@ function buildDiscriminator(resolved: Record<string, unknown>): (data: unknown) 
 
 /** Intermediate representation for a resolved oneOf/anyOf candidate before collapsing. */
 type ResolvedVariant = {
-  kind: "string" | "number" | "boolean" | "enum" | "map" | "json" | "object";
+  kind: "string" | "number" | "boolean" | "enum" | "map" | "json" | "object" | "duration";
   label: string;
   matchesData: (data: unknown) => boolean;
   fields: FormFieldDescriptor[];
@@ -714,6 +715,7 @@ function buildOneOfVariants(
         const nestedField: OneOfField = {
           kind: "one-of",
           path: leafPath,
+          sentinelPath: `${leafPath}.__nested__`,
           label: nestedLabel,
           required: false,
           variants: nestedVariants,
@@ -894,12 +896,44 @@ function buildOneOfVariants(
       }
 
       /*
+       * Duration.
+       *
+       * Duration Literal is a string schema with an ISO-8601 duration
+       * pattern. Keep it as a DurationField so the duration-specific
+       * control and validation are preserved.
+       */
+      if (
+        resolved.type === "string" &&
+        typeof resolved.pattern === "string" &&
+        resolved.pattern.startsWith("^P")
+      ) {
+        const leafField: DurationField = {
+          kind: "duration",
+          path: leafPath,
+          label: rawLabel,
+          required: false,
+        };
+
+        return [
+          {
+            kind: "duration",
+            label: rawLabel,
+            matchesData,
+            fields: [leafField],
+            resolved,
+            c,
+          },
+        ];
+      }
+
+      /*
        * Plain string.
        *
        * At this point UriTemplate has already been handled above,
        * so LiteralUriTemplate and LiteralUri can remain independent
        * variants.
        */
+
       const isUriTemplate =
         titleCandidate === "LiteralUriTemplate" ||
         titleCandidate === "LiteralUri" ||
@@ -907,11 +941,12 @@ function buildOneOfVariants(
 
       const isRuntimeExpression = isRuntimeExpressionSchema(c, resolved);
 
-      const placeholder = isUriTemplate
-        ? "https://example.com/api/{id}"
-        : isRuntimeExpression
-          ? "${...}"
-          : undefined;
+      const placeholder =
+        isApiEndpoint && isUriTemplate
+          ? API_ENDPOINT_PLACEHOLDER
+          : isRuntimeExpression
+            ? "${...}"
+            : undefined;
 
       const leafField: StringField = {
         kind: "string",
