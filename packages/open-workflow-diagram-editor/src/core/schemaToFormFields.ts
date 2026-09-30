@@ -15,6 +15,7 @@
  */
 
 import type { DereferencedSchema } from "./schemaFilter";
+import type { ContentFormat } from "./workflowSdk";
 
 /**
  * A single form field descriptor produced by walking a task's JSON Schema.
@@ -107,7 +108,7 @@ export interface MapField extends FieldBase {
 
 export interface JsonField extends FieldBase {
   kind: "json";
-  format: "json" | "yaml";
+  format: ContentFormat;
 }
 
 export interface OneOfField extends FieldBase {
@@ -249,12 +250,15 @@ function isFlowDirectiveSchema(
 /** Derive a human-readable label from a schema node and the property key. */
 function deriveLabel(schema: Record<string, unknown>, key: string): string {
   if (typeof schema.title === "string") {
-    // Strip any CamelCase prefix from composite titles like "ForTaskDo" → "Do"
     const words = schema.title
       .replace(/([A-Z])/g, " $1")
       .trim()
       .split(" ");
-    return words[words.length - 1] ?? key;
+    const lastWord = words[words.length - 1];
+    // Use the last word only if it matches the property key (case-insensitive).
+    if (lastWord !== undefined && lastWord.toLowerCase() === key.toLowerCase()) {
+      return lastWord;
+    }
   }
   return key;
 }
@@ -295,6 +299,15 @@ function formatVariantLabel(title: string): string {
     .trim();
 }
 
+const API_ENDPOINT_PLACEHOLDER = "https://example.com/api/{id}";
+const ADDRESS_PATH_SUFFIXES = ["endpoint", "uri", "source"] as const;
+
+/* Whether a path holds the address of a service in workflow calls - and should get the API-endpoint example */
+function isApiEndpointPath(path: string): boolean {
+  const lower = path.toLowerCase();
+  return ADDRESS_PATH_SUFFIXES.some((suffix) => lower.endsWith(suffix));
+}
+
 /** Only include the `description` key when it has a value (exactOptionalPropertyTypes). */
 function withDesc(description: string | undefined): { description?: string } {
   return description !== undefined ? { description } : {};
@@ -324,7 +337,7 @@ export function schemaToFormFields(
   defs?: Record<string, unknown>,
   requiredSet?: Set<string>,
   path = "",
-  format: "json" | "yaml" = "yaml",
+  format: ContentFormat = "yaml",
 ): FormFieldDescriptor[] {
   const fields: FormFieldDescriptor[] = [];
 
@@ -647,9 +660,10 @@ function buildOneOfVariants(
   candidates: unknown[],
   defs: Record<string, unknown> | undefined,
   parentPath: string,
-  format: "json" | "yaml" = "yaml",
+  format: ContentFormat = "yaml",
 ): OneOfVariant[] {
   const leafPath = parentPath || "__leaf__";
+  const isApiEndpoint = isApiEndpointPath(parentPath);
 
   // First pass: resolve candidate refs and build raw variant list
   const resolvedList = candidates.flatMap((candidate, idx): ResolvedVariant[] => {
@@ -823,7 +837,7 @@ function buildOneOfVariants(
         };
         return [
           {
-            kind: "enum",
+            kind: "enum" as const,
             label: rawLabel,
             matchesData,
             fields: [leafField],
@@ -1034,6 +1048,10 @@ function buildOneOfVariants(
       const isRuntimeExpression =
         item.resolved.title === "RuntimeExpression" ||
         isRuntimeExpressionSchema(item.c, item.resolved);
+      const isUriContext =
+        isApiEndpoint ||
+        (typeof item.c.$ref === "string" && item.c.$ref.includes("uriTemplate")) ||
+        item.resolved.title === "UriTemplate";
 
       const firstPassField = item.fields[0] as StringField | undefined;
 
@@ -1066,8 +1084,12 @@ function buildOneOfVariants(
           label: preferredLabel,
           required: false,
           multiline: false,
-          isRuntimeExpression,
-          ...(inheritedPlaceholder !== undefined ? { placeholder: inheritedPlaceholder } : {}),
+          isRuntimeExpression: isRuntimeExpression,
+          ...(isApiEndpoint
+            ? { placeholder: API_ENDPOINT_PLACEHOLDER }
+            : inheritedPlaceholder !== undefined
+              ? { placeholder: inheritedPlaceholder }
+              : {}),
         };
         mergedStringVariant = {
           label: preferredLabel,
@@ -1076,6 +1098,19 @@ function buildOneOfVariants(
         };
       } else {
         mergedStringVariant.matchPredicates.push(item.matchesData);
+        const merged = mergedStringVariant.fields[0] as StringField;
+        if (isUriContext) {
+          mergedStringVariant.label = "URI";
+        }
+        if (isApiEndpoint) {
+          merged.placeholder = API_ENDPOINT_PLACEHOLDER;
+        } else if (
+          isRuntimeExpression &&
+          merged.placeholder === undefined &&
+          inheritedPlaceholder !== undefined
+        ) {
+          merged.placeholder = inheritedPlaceholder;
+        }
       }
     } else {
       if (mergedStringVariant) {
