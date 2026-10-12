@@ -49,38 +49,32 @@ describe("schemaToFormFields endpoint and oneOf unwrapping", () => {
     ) as OneOfField | undefined;
     expect(endpointOneOf).toBeDefined();
 
-    // Endpoint should have explicit variants: "Expression", "URI", and "Endpoint Configuration"
+    // Endpoint exposes Runtime Expression, URI, and Endpoint Configuration.
     const variantLabels = endpointOneOf?.variants.map((v) => v.label);
-    expect(variantLabels).toEqual(["Runtime Expression", "URI Template", "Endpoint Configuration"]);
+    expect(variantLabels).toEqual(["Runtime Expression", "URI", "Endpoint Configuration"]);
 
-    const uriTemplateVariant = endpointOneOf?.variants.find((v) => v.label === "URI Template");
-    expect(uriTemplateVariant).toBeDefined();
-    const uriTemplateField = uriTemplateVariant?.fields[0];
-    expect(uriTemplateField?.kind).toBe("one-of");
-    const uriTemplateOneOf = uriTemplateField as OneOfField;
-    const literalUriVariant = uriTemplateOneOf.variants.find((v) => v.label === "Literal URI");
-    const literalUriTemplateVariant = uriTemplateOneOf.variants.find(
-      (v) => v.label === "Literal URI Template",
-    );
-    expect(literalUriVariant).toBeDefined();
-    expect(literalUriTemplateVariant).toBeDefined();
-    const uriLeafField = literalUriVariant?.fields[0] as StringField;
-    expect(uriLeafField?.kind).toBe("string");
-    expect(uriLeafField?.placeholder).toBe("https://example.com/api/{id}");
+    // URI is a single text input, without a nested Literal URI / URI Template selector.
+    const uriVariant = endpointOneOf?.variants.find((v) => v.label === "URI");
+    expect(uriVariant).toBeDefined();
 
-    // The "Endpoint Configuration" variant should have a `uri` field as a oneOf (URI Template vs Expression)
+    const uriField = uriVariant?.fields[0];
+    expect(uriField?.kind).toBe("string");
+
+    const uriStringField = uriField as StringField;
+    expect(uriStringField.placeholder).toBe("https://example.com/api/{id}");
+
+    // Endpoint Configuration exposes its URI as a single text input.
     const configVariant = endpointOneOf?.variants.find((v) => v.label === "Endpoint Configuration");
-    const uriFieldInConfig = configVariant?.fields.find(
+    expect(configVariant).toBeDefined();
+
+    const configUriField = configVariant?.fields.find(
       (f) => f.path === "input.schema.resource.endpoint.uri",
-    ) as OneOfField | undefined;
-    expect(uriFieldInConfig?.kind).toBe("one-of");
-    const uriVariantLabels = uriFieldInConfig?.variants.map((v) => v.label);
-    expect(uriVariantLabels).toContain("Literal Endpoint URI");
-    expect(uriVariantLabels).toHaveLength(2);
-    const expressionVariant = uriFieldInConfig?.variants.find(
-      (v) => v.label !== "Literal Endpoint URI",
     );
-    expect(expressionVariant).toBeDefined();
+
+    expect(configUriField?.kind).toBe("string");
+
+    const configUriStringField = configUriField as StringField;
+    expect(configUriStringField.placeholder).toBe("https://example.com/api/{id}");
   });
 
   /**
@@ -111,7 +105,7 @@ describe("schemaToFormFields endpoint and oneOf unwrapping", () => {
 
     const variantLabels = endpointOneOf?.variants.map((v) => v.label);
     expect(variantLabels).toContain("Runtime Expression");
-    expect(variantLabels).toContain("URI Template");
+    expect(variantLabels).toContain("URI");
     expect(variantLabels).toContain("Endpoint Configuration");
   });
 
@@ -132,25 +126,16 @@ describe("schemaToFormFields endpoint and oneOf unwrapping", () => {
       (v) => v.label === "Endpoint Configuration",
     );
 
-    const endpointUriOneOf = endpointConfigVariant?.fields.find(
+    const endpointUriField = endpointConfigVariant?.fields.find(
       (f) => f.path === "with.endpoint.uri",
-    ) as OneOfField | undefined;
-
-    const literalEndpointUriVariant = endpointUriOneOf?.variants.find(
-      (v) => v.label === "Literal Endpoint URI",
     );
 
-    const uriOneOf = literalEndpointUriVariant?.fields.find((f) => f.kind === "one-of") as
-      | OneOfField
-      | undefined;
+    expect(endpointUriField?.kind).toBe("string");
 
-    const uriTemplateVariant = uriOneOf?.variants.find((v) => v.label === "Literal URI Template");
+    const uriStringField = endpointUriField as StringField;
 
-    const uriLeafField = uriTemplateVariant?.fields[0] as StringField | undefined;
-
-    expect(uriLeafField?.kind).toBe("string");
-    expect(uriLeafField?.isRuntimeExpression).toBe(false);
-    expect(uriLeafField?.placeholder).toBe("https://example.com/api/{id}");
+    expect(uriStringField.isRuntimeExpression).toBe(false);
+    expect(uriStringField.placeholder).toBe("https://example.com/api/{id}");
   });
 
   it("CallHTTP Endpoint Configuration variant exposes Endpoint Uri combo with URI and Expression options", () => {
@@ -163,15 +148,13 @@ describe("schemaToFormFields endpoint and oneOf unwrapping", () => {
       | undefined;
 
     const configVariant = endpointOneOf?.variants.find((v) => v.label === "Endpoint Configuration");
-    const endpointUriOneOf = configVariant?.fields.find((f) => f.path === "with.endpoint.uri") as
-      | OneOfField
-      | undefined;
-    expect(endpointUriOneOf?.kind).toBe("one-of");
+    const endpointUriField = configVariant?.fields.find((f) => f.path === "with.endpoint.uri");
 
-    const uriVariantLabels = endpointUriOneOf?.variants.map((v) => v.label);
-    console.log("Endpoint URI variants:", uriVariantLabels);
-    expect(uriVariantLabels).toContain("Literal Endpoint URI");
-    expect(uriVariantLabels).toContain("Expression");
+    expect(endpointUriField?.kind).toBe("string");
+
+    const uriStringField = endpointUriField as StringField;
+    expect(uriStringField.placeholder).toBe("https://example.com/api/{id}");
+    expect(uriStringField.isRuntimeExpression).toBe(false);
   });
 
   it("generates a key-value MapField for CallGRPC with.arguments", () => {
@@ -213,23 +196,27 @@ describe("schemaToFormFields emitTask event.with field variants", () => {
     expect(sourceField?.kind).toBe("one-of");
     const labels = sourceField?.variants.map((v) => v.label);
     expect(labels).toContain("Runtime Expression");
-    expect(labels).toContain("URI Template");
+    expect(labels).toContain("URI");
   });
 
   it("`source` URI variant is a non-expression string with URI placeholder", () => {
     const withChildren = getWithChildren();
+
     const sourceField = withChildren.find((f) => f.path === "emit.event.with.source") as
       | OneOfField
       | undefined;
-    const uriTemplateVariant = sourceField?.variants.find((v) => v.label === "URI Template");
-    expect(uriTemplateVariant).toBeDefined();
-    const uriTemplateField = uriTemplateVariant?.fields[0];
-    expect(uriTemplateField?.kind).toBe("one-of");
-    const uriTemplateOneOf = uriTemplateField as OneOfField;
-    expect(uriTemplateOneOf.variants.map((v) => v.label)).toEqual([
-      "Literal URI Template",
-      "Literal URI",
-    ]);
+
+    expect(sourceField).toBeDefined();
+
+    const uriVariant = sourceField?.variants.find((v) => v.label === "URI");
+    expect(uriVariant).toBeDefined();
+
+    const uriField = uriVariant?.fields[0];
+    expect(uriField?.kind).toBe("string");
+
+    const uriStringField = uriField as StringField;
+    expect(uriStringField.isRuntimeExpression).toBe(false);
+    expect(uriStringField.placeholder).toBe("https://example.com/api/{id}");
   });
 
   it("`source` Expression variant is a runtime-expression string with ${...} placeholder", () => {
@@ -246,15 +233,22 @@ describe("schemaToFormFields emitTask event.with field variants", () => {
 
   it("`source` URI variant matches a URI string; Expression variant matches a ${...} string", () => {
     const withChildren = getWithChildren();
+
     const sourceField = withChildren.find((f) => f.path === "emit.event.with.source") as
       | OneOfField
       | undefined;
-    const uriVariant = sourceField?.variants.find((v) => v.label === "URI Template");
+
+    const uriVariant = sourceField?.variants.find((v) => v.label === "URI");
     const exprVariant = sourceField?.variants.find((v) => v.label === "Runtime Expression");
-    // URI wins for plain URIs
+
+    expect(uriVariant).toBeDefined();
+    expect(exprVariant).toBeDefined();
+
+    // URI wins for plain URIs.
     expect(uriVariant?.matchesData("https://example.com/source")).toBe(true);
     expect(exprVariant?.matchesData("https://example.com/source")).toBe(false);
-    // Expression wins for ${...} strings
+
+    // Expression wins for ${...} strings.
     expect(exprVariant?.matchesData("${.source}")).toBe(true);
     expect(uriVariant?.matchesData("${.source}")).toBe(false);
   });

@@ -342,7 +342,6 @@ function deriveLabel(schema: Record<string, unknown>, key: string): string {
   return key;
 }
 
-/** Formats a schema title or camelCase identifier into a user-friendly label. */
 function formatVariantLabel(title: string): string {
   if (title == "UriTemplate") {
     return "URI Template";
@@ -1012,6 +1011,47 @@ function buildOneOfVariants(
   const leafPath = parentPath || "__leaf__";
   const isApiEndpoint = isApiEndpointPath(parentPath);
 
+  // Collapse endpoint URI alternatives into one free-text URI field.
+  const candidateTitles = candidates.map((candidate) => {
+    if (!isPlainObject(candidate)) return undefined;
+
+    const ref = typeof candidate.$ref === "string" ? resolveRef(candidate.$ref, defs) : null;
+
+    return typeof candidate.title === "string"
+      ? candidate.title
+      : typeof ref?.title === "string"
+        ? ref.title
+        : undefined;
+  });
+
+  const isEndpointUriUnion =
+    isApiEndpoint &&
+    candidateTitles.length > 0 &&
+    candidateTitles.every(
+      (title) => title === "ExpressionEndpointURI" || title === "LiteralEndpointURI",
+    );
+
+  if (isEndpointUriUnion) {
+    const uriField: StringField = {
+      kind: "string",
+      path: leafPath,
+      label: "URI",
+      required: false,
+      multiline: false,
+      isRuntimeExpression: false,
+      placeholder: API_ENDPOINT_PLACEHOLDER,
+    };
+
+    return [
+      {
+        label: "URI",
+        fields: [uriField],
+        matchesData: (data) => typeof data === "string",
+        constWrites: {},
+      },
+    ];
+  }
+
   // First pass: resolve candidate refs and build raw variant list
   const resolvedList = candidates.flatMap((candidate, idx): ResolvedVariant[] => {
     if (!isPlainObject(candidate)) return [];
@@ -1035,6 +1075,84 @@ function buildOneOfVariants(
     const rawLabel = titleCandidate ? formatVariantLabel(titleCandidate) : `Option ${idx + 1}`;
     const matchesData = buildDiscriminator(resolved);
 
+    if (titleCandidate === "UriTemplate" && Array.isArray(resolved.anyOf) && !resolved.properties) {
+      const uriField: StringField = {
+        kind: "string",
+        path: leafPath,
+        label: "URI",
+        required: false,
+        multiline: false,
+        isRuntimeExpression: false,
+        ...(isApiEndpoint ? { placeholder: API_ENDPOINT_PLACEHOLDER } : {}),
+      };
+
+      return [
+        {
+          kind: "string",
+          label: "URI",
+          matchesData: (data) => typeof data === "string",
+          fields: [uriField],
+          resolved,
+          c,
+        },
+      ];
+    }
+
+    // URI and endpoint URI alternatives should use one free-text input.
+    // Handle this before nested oneOf/anyOf selectors are constructed.
+    const isUriInput =
+      isApiEndpoint &&
+      !resolved.properties &&
+      (Array.isArray(resolved.oneOf) || Array.isArray(resolved.anyOf));
+
+    if (isUriInput) {
+      const uriField: StringField = {
+        kind: "string",
+        path: leafPath,
+        label: "URI",
+        required: false,
+        multiline: false,
+        isRuntimeExpression: false,
+        placeholder: API_ENDPOINT_PLACEHOLDER,
+      };
+
+      return [
+        {
+          kind: "string",
+          label: "URI",
+          matchesData: (data) => typeof data === "string",
+          fields: [uriField],
+          resolved,
+          c,
+        },
+      ];
+    }
+
+    const isEndpointUriVariant =
+      titleCandidate === "ExpressionEndpointURI" || titleCandidate === "LiteralEndpointURI";
+
+    if (isEndpointUriVariant) {
+      const uriField: StringField = {
+        kind: "string",
+        path: leafPath,
+        label: "URI",
+        required: false,
+        multiline: false,
+        isRuntimeExpression: false,
+        placeholder: API_ENDPOINT_PLACEHOLDER,
+      };
+
+      return [
+        {
+          kind: "string",
+          label: "URI",
+          matchesData: (data) => typeof data === "string",
+          fields: [uriField],
+          resolved,
+          c,
+        },
+      ];
+    }
     /*
      * IMPORTANT:
      *
@@ -1112,16 +1230,7 @@ function buildOneOfVariants(
     }
     // Variants with no fixed properties and no nested oneOf/anyOf are either maps or scalars.
     // A uriTemplate anyOf (LiteralUriTemplate | LiteralUri) is a string scalar — treat it as one.
-    const isUriTemplateAnyOf =
-      typeof c.$ref === "string" &&
-      c.$ref.includes("uriTemplate") &&
-      Array.isArray(resolved.anyOf) &&
-      !resolved.properties &&
-      !Array.isArray(resolved.oneOf);
-    if (
-      (!resolved.properties && !Array.isArray(resolved.oneOf) && !Array.isArray(resolved.anyOf)) ||
-      isUriTemplateAnyOf
-    ) {
+    if (!resolved.properties && !Array.isArray(resolved.oneOf) && !Array.isArray(resolved.anyOf)) {
       // ── Truly-empty schema {} — treat as unconstrained JSON value ─────────
       const isEmptySchema = Object.keys(resolved).every((k) => SCHEMA_META_KEYS.has(k));
       if (isEmptySchema) {
@@ -1405,9 +1514,7 @@ function buildOneOfVariants(
     (item) =>
       item.resolved.title === "LiteralUriTemplate" ||
       item.resolved.title === "LiteralUri" ||
-      item.resolved.title === "RuntimeExpression" ||
-      item.resolved.title === "ExpressionEndpointURI" ||
-      item.resolved.title === "LiteralEndpointURI",
+      item.resolved.title === "RuntimeExpression",
   );
 
   const allStrings = resolvedList.every((item) => item.kind === "string");
@@ -1415,6 +1522,18 @@ function buildOneOfVariants(
     const hasExpVariant = resolvedList.some((item) =>
       isRuntimeExpressionSchema(item.c, item.resolved),
     );
+
+    if (hasExpVariant) {
+      for (const item of resolvedList) {
+        if (isRuntimeExpressionSchema(item.c, item.resolved)) {
+          continue;
+        }
+        const f = item.fields[0];
+        if (f?.kind === "string") {
+          f.hasExpressionSibling = true;
+        }
+      }
+    }
 
     if (hasExplicitVariantLabels) {
       return resolvedList.map((item) => ({
@@ -1507,11 +1626,7 @@ function buildOneOfVariants(
        * Never rename an explicitly named URI variant to "URI".
        */
 
-      if (
-        item.resolved.title === "LiteralUriTemplate" ||
-        item.resolved.title === "LiteralUri" ||
-        item.resolved.title === "RuntimeExpression"
-      ) {
+      if (item.resolved.title === "RuntimeExpression") {
         collapsed.push({
           label: item.label,
           fields: item.fields,
@@ -1526,7 +1641,8 @@ function buildOneOfVariants(
       // modes (RE vs literal URI) must remain separate selectable variants.
       const mergedIsRe = (mergedStringVariant?.fields[0] as StringField | undefined)
         ?.isRuntimeExpression;
-      const canMerge = mergedStringVariant !== null && mergedIsRe === isRuntimeExpression;
+      const canMerge =
+        mergedStringVariant !== null && (isApiEndpoint || mergedIsRe === isRuntimeExpression);
 
       if (!canMerge) {
         if (mergedStringVariant) {
