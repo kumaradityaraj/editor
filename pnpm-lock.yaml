@@ -256,18 +256,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@base-ui/react':
-        specifier: 'catalog:'
-        version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@openworkflowspec/i18n':
-        specifier: workspace:*
-        version: link:../i18n
-      '@openworkflowspec/sdk':
-        specifier: 'catalog:'
-        version: 1.0.3-alpha8
-      '@xyflow/react':
-        specifier: 'catalog:'
-        version: 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       class-variance-authority:
         specifier: 'catalog:'
         version: 0.7.1

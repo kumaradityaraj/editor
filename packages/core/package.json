@@ -12,8 +12,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./styles.css": "./dist/styles.css"
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -31,10 +30,6 @@
     "test-e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@base-ui/react": "catalog:",
-    "@openworkflowspec/i18n": "workspace:*",
-    "@openworkflowspec/sdk": "catalog:",
-    "@xyflow/react": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "elkjs": "catalog:",

@@ -16,3 +16,4 @@
 
 import "./styles.css";
 export * from "./diagram-editor";
+export type { ColorMode, ResolvedColorMode } from "@openworkflowspec/core";
