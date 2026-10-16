@@ -1,5 +1,5 @@
 ---
-"@openworkflowspec/core": major
+"@openworkflowspec/core": minor
 ---
 
 Core package implementation
