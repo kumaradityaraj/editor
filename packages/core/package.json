@@ -24,9 +24,13 @@
     "build:prod": "pnpm lint && pnpm typecheck && pnpm clean && tsc -p tsconfig.json && vite build"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
-    "rimraf": "catalog:"
+    "rimraf": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
   },
   "peerDependencies": {
     "react": "^19.0.0",
