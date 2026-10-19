@@ -1,7 +1,7 @@
 ---
-"@openworkflowspec/core": minor,
-"@openworkflowspec/text-editor": minor,
-"@openworkflowspec/diagram-editor": minor,
+"@openworkflowspec/core": minor
+"@openworkflowspec/text-editor": minor
+"@openworkflowspec/diagram-editor": minor
 ---
 
 Core package implementation
