@@ -28,12 +28,12 @@
     "@types/react": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
+    "react": "catalog:",
     "rimraf": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.0.0"
   }
 }

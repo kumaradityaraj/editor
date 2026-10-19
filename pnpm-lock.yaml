@@ -255,13 +255,6 @@ importers:
         version: 5.0.3(@types/node@26.6.5)(@vitest/browser-playwright@5.0.3)(@vitest/coverage-v8@5.0.3)(@vitest/ui@5.0.3)(jsdom@30.1.2)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.1))
 
   packages/core:
-    dependencies:
-      react:
-        specifier: ^19.0.0
-        version: 19.3.0
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.3.0(react@19.3.0)
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -275,6 +268,9 @@ importers:
       oxlint:
         specifier: 'catalog:'
         version: 1.87.0
+      react:
+        specifier: 'catalog:'
+        version: 19.3.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
