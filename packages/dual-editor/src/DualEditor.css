@@ -1,0 +1,115 @@
+.ows-dual-editor {
+  --ows-dual-editor-divider-size: 0px;
+  --ows-dual-editor-divider-hit-size: 10px;
+  display: grid;
+  grid-template-columns:
+    minmax(0, var(--ows-dual-editor-split))
+    var(--ows-dual-editor-divider-size)
+    minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ows-dual-editor__pane {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ows-dual-editor__divider {
+  position: relative;
+  z-index: 1;
+  width: var(--ows-dual-editor-divider-hit-size);
+  height: 100%;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.ows-dual-editor--stacked {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows:
+    minmax(0, var(--ows-dual-editor-split))
+    var(--ows-dual-editor-divider-size)
+    minmax(0, 1fr);
+}
+
+.ows-dual-editor--stacked .ows-dual-editor__divider {
+  width: 100%;
+  height: var(--ows-dual-editor-divider-hit-size);
+  transform: translateY(-50%);
+  cursor: row-resize;
+}
+
+.ows-dual-editor__divider::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: transparent;
+  content: "";
+  transition:
+    width 120ms ease,
+    background-color 120ms ease;
+}
+
+.ows-dual-editor--stacked .ows-dual-editor__divider::after {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: auto;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.ows-dual-editor--dark .ows-dual-editor__divider::after {
+  background: transparent;
+}
+
+.ows-dual-editor__divider:hover::after,
+.ows-dual-editor__divider:focus-visible::after,
+.ows-dual-editor--dragging .ows-dual-editor__divider::after {
+  width: 2px;
+  background: #2563eb;
+}
+
+.ows-dual-editor--stacked .ows-dual-editor__divider:hover::after,
+.ows-dual-editor--stacked .ows-dual-editor__divider:focus-visible::after,
+.ows-dual-editor--stacked.ows-dual-editor--dragging .ows-dual-editor__divider::after {
+  width: auto;
+  height: 2px;
+}
+
+.ows-dual-editor--dark .ows-dual-editor__divider:hover::after,
+.ows-dual-editor--dark .ows-dual-editor__divider:focus-visible::after,
+.ows-dual-editor--dark.ows-dual-editor--dragging .ows-dual-editor__divider::after {
+  background: #60a5fa;
+}
+
+.ows-dual-editor__divider:focus-visible {
+  outline: none;
+}
+
+.ows-dual-editor--dragging {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.ows-dual-editor--stacked.ows-dual-editor--dragging {
+  cursor: row-resize;
+}
+
+@media (max-width: 640px) {
+  .ows-dual-editor {
+    --ows-dual-editor-divider-hit-size: 8px;
+  }
+}

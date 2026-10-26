@@ -46,6 +46,7 @@ export const DiagramEditorContextProvider = React.forwardRef<
   DiagramEditorRef,
   React.PropsWithChildren<ContextProviderProps>
 >((props, ref) => {
+  const onContentChange = props.onContentChange;
   // Detect the serialization format once from the initial content prop.
   // JSON content starts with `{` (after trimming); everything else is YAML.
   // useState keeps the format in sync with React's render cycle, so consumers
@@ -97,6 +98,8 @@ export const DiagramEditorContextProvider = React.forwardRef<
   // Keep a ref to the latest selectedNodeId so the effect below can read it
   // synchronously without taking it as a dependency (avoids re-seeding on every click).
   const selectedNodeIdRef = React.useRef<string | null>(selectedNodeId);
+  const externallySeededModelRef = React.useRef<Specification.Workflow | null>(null);
+  const reportedModelRef = React.useRef<Specification.Workflow | null>(null);
 
   React.useEffect(() => {
     selectedNodeIdRef.current = selectedNodeId;
@@ -124,6 +127,7 @@ export const DiagramEditorContextProvider = React.forwardRef<
     // to both setSelectedNodeId and seedModel in one shot.
     const resolvedId = resolveSelectedId(parsedModel, selectedNodeIdRef.current);
     setSelectedNodeId(resolvedId);
+    externallySeededModelRef.current = parsedModel;
     seedModel(parsedModel, { x: 0, y: 0, zoom: 1 }, resolvedId);
     // selectedNodeIdRef is a ref (stable, mutated inline — not a dep by convention).
   }, [props.content, resetHistory, seedModel]);
@@ -149,6 +153,7 @@ export const DiagramEditorContextProvider = React.forwardRef<
 
       const resolvedId = resolveSelectedId(newModel, selectedNodeIdRef.current);
       setSelectedNodeId(resolvedId);
+      externallySeededModelRef.current = newModel;
       seedModel(newModel, { x: 0, y: 0, zoom: 1 }, resolvedId);
     },
     [seedModel],
@@ -168,6 +173,18 @@ export const DiagramEditorContextProvider = React.forwardRef<
     if (!model) return "";
     return serializeWorkflow(model, contentFormat);
   }, [model, contentFormat]);
+
+  React.useEffect(() => {
+    if (!model) return;
+    if (model === externallySeededModelRef.current) {
+      externallySeededModelRef.current = null;
+      reportedModelRef.current = model;
+      return;
+    }
+    if (model === reportedModelRef.current) return;
+    reportedModelRef.current = model;
+    onContentChange?.(serializeWorkflow(model, contentFormat));
+  }, [model, contentFormat, onContentChange]);
 
   React.useImperativeHandle(
     ref as React.Ref<DiagramEditorRef>,

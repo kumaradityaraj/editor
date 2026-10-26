@@ -79,6 +79,21 @@ describe("DiagramEditor Component", () => {
     expect(screen.getByTestId("dec-root")).toHaveAttribute("lang", "fr");
   });
 
+  it("does not report externally loaded content as an edit", async () => {
+    const onContentChange = vi.fn();
+    render(
+      <DiagramEditor
+        content={BASIC_VALID_WORKFLOW_JSON}
+        locale="en"
+        isReadOnly={true}
+        onContentChange={onContentChange}
+      />,
+    );
+
+    await waitFor(() => expect(screen.getByTestId("diagram-container")).toBeInTheDocument());
+    expect(onContentChange).not.toHaveBeenCalled();
+  });
+
   it("updates the rendered content when the workflow content change", () => {
     const { rerender } = render(
       <DiagramEditor content={UNPARSEABLE_CONTENT} locale="en" isReadOnly={true} />,

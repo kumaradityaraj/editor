@@ -101,6 +101,11 @@ export type DiagramEditorProps = {
    * `"system"` follows the OS/browser preference via `prefers-color-scheme`.
    */
   colorMode?: ColorMode;
+  /**
+   * Called when an in-editor edit, undo, or redo changes the workflow.
+   * Initial and externally supplied content changes do not trigger the callback.
+   */
+  onContentChange?: (content: string) => void;
 };
 
 const DiagramEditorContent = ({
