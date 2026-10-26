@@ -15,6 +15,7 @@
  */
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useEffect, useState } from "react";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DualEditor } from "../src/DualEditor";
@@ -43,14 +44,23 @@ vi.mock("@openworkflowspec/diagram-editor", () => ({
   }: {
     content: string;
     onContentChange?: (content: string) => void;
-  }) => (
-    <textarea
-      aria-label="Diagram source"
-      data-testid="diagram-source"
-      value={content}
-      onChange={(event) => onContentChange?.(event.currentTarget.value)}
-    />
-  ),
+  }) => {
+    const [diagramContent, setDiagramContent] = useState(content);
+    useEffect(() => setDiagramContent(content), [content]);
+
+    return (
+      <textarea
+        aria-label="Diagram source"
+        data-testid="diagram-source"
+        value={diagramContent}
+        onChange={(event) => {
+          const nextContent = event.currentTarget.value;
+          setDiagramContent(nextContent);
+          onContentChange?.(nextContent);
+        }}
+      />
+    );
+  },
 }));
 
 const createLanguageServiceWorker = () => ({ terminate: vi.fn() }) as unknown as Worker;
@@ -103,6 +113,25 @@ describe("DualEditor", () => {
 
     expect(screen.getByTestId("text-source")).toHaveValue("edited in diagram");
     expect(onContentChange).toHaveBeenCalledWith("edited in diagram");
+  });
+
+  it("resyncs the diagram after undo followed by a text edit", () => {
+    renderDualEditor();
+
+    fireEvent.change(screen.getByTestId("text-source"), {
+      target: { value: "edited in text" },
+    });
+    expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
+
+    fireEvent.change(screen.getByTestId("diagram-source"), {
+      target: { value: "initial workflow" },
+    });
+    expect(screen.getByTestId("text-source")).toHaveValue("initial workflow");
+
+    fireEvent.change(screen.getByTestId("text-source"), {
+      target: { value: "edited in text" },
+    });
+    expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
   });
 
   it("applies external content changes to both panes", async () => {

@@ -97,6 +97,7 @@ export const DualEditor = ({
       if (nextContent === editorContentRef.current) return;
       editorContentRef.current = nextContent;
       setEditorContent(nextContent);
+      setDiagramContent(nextContent);
       onContentChange?.(nextContent);
     },
     [onContentChange],
