@@ -192,6 +192,7 @@ export const DualEditor = ({
       >
         <DiagramEditor
           content={diagramContent}
+          contentFormat={language}
           isReadOnly={isReadOnly}
           locale={locale}
           colorMode={colorMode}

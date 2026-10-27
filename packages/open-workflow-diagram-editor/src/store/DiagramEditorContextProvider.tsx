@@ -51,9 +51,10 @@ export const DiagramEditorContextProvider = React.forwardRef<
   // JSON content starts with `{` (after trimming); everything else is YAML.
   // useState keeps the format in sync with React's render cycle, so consumers
   // always see the current format without needing a separate cache-buster counter.
-  const [contentFormat, setContentFormat] = React.useState<ContentFormat>(
+  const [detectedContentFormat, setDetectedContentFormat] = React.useState<ContentFormat>(
     props.content.trimStart().startsWith("{") ? "json" : "yaml",
   );
+  const contentFormat = props.contentFormat ?? detectedContentFormat;
 
   // Config state (non-history)
   const [locale, setLocale] = React.useState<string>(props.locale);
@@ -149,7 +150,7 @@ export const DiagramEditorContextProvider = React.forwardRef<
       setErrors(newErrors);
 
       const newFormat: ContentFormat = content.trimStart().startsWith("{") ? "json" : "yaml";
-      setContentFormat(newFormat);
+      setDetectedContentFormat(newFormat);
 
       const resolvedId = resolveSelectedId(newModel, selectedNodeIdRef.current);
       setSelectedNodeId(resolvedId);

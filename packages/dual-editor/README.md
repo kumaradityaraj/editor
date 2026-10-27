@@ -42,15 +42,13 @@ The component fills its parent. Give the parent a definite height. Edits in eith
 
 ## Props
 
-| Prop                          | Type                        | Required | Default    | Description                                                                  |
-| ----------------------------- | --------------------------- | -------- | ---------- | ---------------------------------------------------------------------------- |
-| `content`                     | `string`                    | Yes      | —          | Workflow definition as JSON or YAML.                                         |
-| `onContentChange`             | `(content: string) => void` | No       | —          | Called when either editor changes the workflow content.                      |
-| `createLanguageServiceWorker` | `() => Worker`              | Yes      | —          | Creates the language service worker for the text editor.                     |
-| `language`                    | `TextEditorLanguage`        | No       | `"json"`   | Text Editor requires this (`"json"` or `"yaml"`); defaults to `"json"` here. |
-| `isReadOnly`                  | `boolean`                   | No       | `false`    | Makes both editors read only.                                                |
-| `locale`                      | `string`                    | No       | `"en"`     | Diagram Editor requires this; DualEditor defaults to `"en"`.                 |
-| `colorMode`                   | `ColorMode`                 | No       | `"system"` | Color mode passed to both editors.                                           |
-| `onSplitChange`               | `(split: number) => void`   | No       | —          | Called with the text pane size percentage after changes.                     |
-
-<!-- dummy -->
+| Prop                          | Type                        | Required | Default    | Description                                                   |
+| ----------------------------- | --------------------------- | -------- | ---------- | ------------------------------------------------------------- |
+| `content`                     | `string`                    | Yes      | —          | Workflow definition as JSON or YAML.                          |
+| `onContentChange`             | `(content: string) => void` | No       | —          | Called when either editor changes the workflow content.       |
+| `createLanguageServiceWorker` | `() => Worker`              | Yes      | —          | Creates the language service worker for the text editor.      |
+| `language`                    | `TextEditorLanguage`        | No       | `"json"`   | Sets text syntax and diagram output format; defaults to JSON. |
+| `isReadOnly`                  | `boolean`                   | No       | `false`    | Makes both editors read only.                                 |
+| `locale`                      | `string`                    | No       | `"en"`     | Diagram Editor requires this; DualEditor defaults to `"en"`.  |
+| `colorMode`                   | `ColorMode`                 | No       | `"system"` | Color mode passed to both editors.                            |
+| `onSplitChange`               | `(split: number) => void`   | No       | —          | Called with the text pane size percentage after changes.      |

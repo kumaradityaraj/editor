@@ -85,6 +85,8 @@ export type DiagramEditorProps = {
    * the lifetime of the component — see `getContent()` on `DiagramEditorRef`.
    */
   content: string;
+  /** Serialization format to use instead of detecting it from `content`. */
+  contentFormat?: "json" | "yaml";
   /**
    * When `true`, the diagram is read-only: no history is recorded, undo/redo
    * are no-ops, and `fitView` runs on every content change. When `false`
@@ -151,6 +153,7 @@ const DiagramEditorBody = ({
           content={props.content}
           isReadOnly={props.isReadOnly}
           locale={props.locale}
+          {...(props.contentFormat && { contentFormat: props.contentFormat })}
           {...(props.onContentChange && { onContentChange: props.onContentChange })}
         >
           <SidebarProvider defaultOpen={false}>

@@ -40,9 +40,11 @@ vi.mock("@openworkflowspec/text-editor", () => ({
 vi.mock("@openworkflowspec/diagram-editor", () => ({
   DiagramEditor: ({
     content,
+    contentFormat,
     onContentChange,
   }: {
     content: string;
+    contentFormat?: "json" | "yaml";
     onContentChange?: (content: string) => void;
   }) => {
     const [diagramContent, setDiagramContent] = useState(content);
@@ -52,6 +54,7 @@ vi.mock("@openworkflowspec/diagram-editor", () => ({
       <textarea
         aria-label="Diagram source"
         data-testid="diagram-source"
+        data-format={contentFormat}
         value={diagramContent}
         onChange={(event) => {
           const nextContent = event.currentTarget.value;
@@ -89,6 +92,22 @@ describe("DualEditor", () => {
         dispatchEvent: vi.fn(),
       })),
     );
+  });
+
+  it("keeps the diagram output format aligned with language for empty content", () => {
+    const { rerender } = renderDualEditor({ content: "", language: "json" });
+
+    expect(screen.getByTestId("diagram-source")).toHaveAttribute("data-format", "json");
+
+    rerender(
+      <DualEditor
+        content='{"name":"workflow"}'
+        language="json"
+        createLanguageServiceWorker={createLanguageServiceWorker}
+      />,
+    );
+
+    expect(screen.getByTestId("diagram-source")).toHaveAttribute("data-format", "json");
   });
 
   it("syncs text edits to the diagram and reports content changes", () => {
