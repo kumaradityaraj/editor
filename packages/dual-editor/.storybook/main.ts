@@ -17,7 +17,7 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const config: StorybookConfig = {
-  typescript: { check: true },
+  typescript: { check: true, reactDocgen: false },
   core: { disableTelemetry: true },
   stories: ["../stories/**/*.mdx", "../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [

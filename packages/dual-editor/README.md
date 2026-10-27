@@ -1,19 +1,18 @@
-/*
+<!--
+   Copyright 2021-Present The Open Workflow Specification Authors
 
-- Copyright 2021-Present The Open Workflow Specification Authors
--
-- Licensed under the Apache License, Version 2.0 (the "License");
-- you may not use this file except in compliance with the License.
-- You may obtain a copy of the License at
--
-- http://www.apache.org/licenses/LICENSE-2.0
--
-- Unless required by applicable law or agreed to in writing, software
-- distributed under the License is distributed on an "AS IS" BASIS,
-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- See the License for the specific language governing permissions and
-- limitations under the License.
-  */
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
 
 # `@openworkflowspec/dual-editor`
 
@@ -24,16 +23,19 @@ React component that displays the Open Workflow text and diagram editors in a re
 ```tsx
 import { DualEditor } from "@openworkflowspec/dual-editor";
 import "@openworkflowspec/dual-editor/styles.css";
-
-<DualEditor
-  content={workflow}
-  onContentChange={setWorkflow}
-  createLanguageServiceWorker={() =>
-    new Worker(new URL("@openworkflowspec/text-editor/worker", import.meta.url), {
-      type: "module",
-    })
-  }
-/>;
+import LanguageServiceWorker from "@openworkflowspec/text-editor/worker?worker";
+import { useState } from "react";
+function App() {
+  const [content, setContent] = useState('{"hello": "world"}');
+  return (
+    <DualEditor
+      content={content}
+      language="json"
+      createLanguageServiceWorker={() => new LanguageServiceWorker()}
+      onContentChange={setContent}
+    />
+  );
+}
 ```
 
 The component fills its parent. Give the parent a definite height. Edits in either pane are synchronized and reported through `onContentChange`. Drag the divider to resize the panes; keyboard users can focus it and use the arrow keys, with Shift for larger steps. On narrow screens the panes stack vertically and the divider resizes their heights.
