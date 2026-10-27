@@ -11,5 +11,5 @@
     "rootDir": ".",
     "exactOptionalPropertyTypes": false
   },
-  "include": ["tests/**/*"]
+  "include": ["tests/**/*", "tests-e2e/**/*"]
 }
