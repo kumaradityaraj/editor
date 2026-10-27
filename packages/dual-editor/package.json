@@ -3,6 +3,10 @@
   "version": "1.1.0",
   "private": true,
   "description": "React component displaying the Open Workflow text and diagram editors side by side",
+  "homepage": "https://github.com/open-workflow-specification/editor",
+  "bugs": {
+    "url": "https://github.com/open-workflow-specification/editor/issues"
+  },
   "license": "Apache-2.0",
   "files": [
     "dist",
@@ -28,7 +32,7 @@
     "build:dev": "pnpm typecheck && pnpm typecheck:test && pnpm clean && tsc -p tsconfig.json && vite build",
     "build:prod": "pnpm lint && pnpm typecheck && pnpm typecheck:test && pnpm clean && tsc -p tsconfig.json && vite build && pnpm test",
     "test": "vitest run",
-    "start": "storybook dev -p 6006 --no-open",
+    "start": "storybook dev -p 6008 --no-open",
     "build:storybook": "pnpm clean:storybook && storybook build --output-dir ./dist-storybook"
   },
   "dependencies": {
