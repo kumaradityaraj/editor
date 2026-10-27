@@ -52,5 +52,3 @@ The component fills its parent. Give the parent a definite height. Edits in eith
 | `locale`                      | `string`                    | No       | `"en"`     | Diagram Editor requires this; DualEditor defaults to `"en"`.                 |
 | `colorMode`                   | `ColorMode`                 | No       | `"system"` | Color mode passed to both editors.                                           |
 | `onSplitChange`               | `(split: number) => void`   | No       | —          | Called with the text pane size percentage after changes.                     |
-
-<!-- dummy push -->
