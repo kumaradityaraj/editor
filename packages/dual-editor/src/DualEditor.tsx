@@ -114,6 +114,7 @@ export const DualEditor = ({
 
   const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    event.currentTarget.focus();
     event.currentTarget.setPointerCapture(event.pointerId);
     setIsDragging(true);
   };
