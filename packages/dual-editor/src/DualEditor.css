@@ -115,6 +115,13 @@
   outline: none;
 }
 
+ @media (forced-colors: active) {
+   .ows-dual-editor__divider:focus-visible {
+     outline: 2px solid Highlight;
+     outline-offset: -2px;
+   }
+ }
+ 
 .ows-dual-editor--dragging {
   cursor: col-resize;
   user-select: none;
