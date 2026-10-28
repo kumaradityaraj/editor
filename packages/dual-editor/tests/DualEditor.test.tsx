@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useEffect, useState } from "react";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -27,14 +27,23 @@ vi.mock("@openworkflowspec/text-editor", () => ({
   }: {
     content: string;
     onContentChange?: (content: string) => void;
-  }) => (
-    <textarea
-      aria-label="Text source"
-      data-testid="text-source"
-      value={content}
-      onChange={(event) => onContentChange?.(event.currentTarget.value)}
-    />
-  ),
+  }) => {
+    const [editorContent, setEditorContent] = useState(content);
+    useEffect(() => setEditorContent(content), [content]);
+
+    return (
+      <textarea
+        aria-label="Text source"
+        data-testid="text-source"
+        value={editorContent}
+        onChange={(event) => {
+          const nextContent = event.currentTarget.value;
+          setEditorContent(nextContent);
+          onContentChange?.(nextContent);
+        }}
+      />
+    );
+  },
 }));
 
 vi.mock("@openworkflowspec/diagram-editor", () => ({
@@ -110,16 +119,32 @@ describe("DualEditor", () => {
     expect(screen.getByTestId("diagram-source")).toHaveAttribute("data-format", "json");
   });
 
-  it("syncs text edits to the diagram and reports content changes", () => {
+  it("debounces text edits to the diagram and content change callback", () => {
     const onContentChange = vi.fn();
     renderDualEditor({ onContentChange });
 
+    vi.useFakeTimers();
+    fireEvent.change(screen.getByTestId("text-source"), {
+      target: { value: "first edit" },
+    });
+    act(() => vi.advanceTimersByTime(900));
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "edited in text" },
     });
 
+    expect(screen.getByTestId("diagram-source")).toHaveValue("initial workflow");
+    expect(screen.getByTestId("text-source")).toHaveValue("edited in text");
+    expect(onContentChange).not.toHaveBeenCalled();
+
+    act(() => vi.advanceTimersByTime(999));
+    expect(screen.getByTestId("diagram-source")).toHaveValue("initial workflow");
+    expect(onContentChange).not.toHaveBeenCalled();
+
+    act(() => vi.advanceTimersByTime(1));
     expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
+    expect(onContentChange).toHaveBeenCalledTimes(1);
     expect(onContentChange).toHaveBeenCalledWith("edited in text");
+    vi.useRealTimers();
   });
 
   it("syncs diagram edits to the text and reports content changes", () => {
@@ -136,10 +161,12 @@ describe("DualEditor", () => {
 
   it("resyncs the diagram after undo followed by a text edit", () => {
     renderDualEditor();
+    vi.useFakeTimers();
 
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "edited in text" },
     });
+    act(() => vi.advanceTimersByTime(1000));
     expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
 
     fireEvent.change(screen.getByTestId("diagram-source"), {
@@ -150,7 +177,9 @@ describe("DualEditor", () => {
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "edited in text" },
     });
+    act(() => vi.advanceTimersByTime(1000));
     expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
+    vi.useRealTimers();
   });
 
   it("applies external content changes to both panes", async () => {

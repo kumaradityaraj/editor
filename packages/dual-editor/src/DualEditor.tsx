@@ -37,6 +37,7 @@ export type DualEditorProps = {
 
 const DEFAULT_SPLIT = 50;
 const MIN_PANE_SIZE = 20;
+const TEXT_TO_DIAGRAM_DEBOUNCE_MS = 3000;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export const DualEditor = ({
@@ -54,16 +55,25 @@ export const DualEditor = ({
   const [editorContent, setEditorContent] = React.useState(content);
   const [diagramContent, setDiagramContent] = React.useState(content);
   const editorContentRef = React.useRef(content);
+  const diagramUpdateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const [split, setSplit] = React.useState(DEFAULT_SPLIT);
   const [isDragging, setIsDragging] = React.useState(false);
   const [isStacked, setIsStacked] = React.useState(false);
 
   React.useEffect(() => {
     if (content === editorContentRef.current) return;
+    if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
     editorContentRef.current = content;
     setEditorContent(content);
     setDiagramContent(content);
   }, [content]);
+
+  React.useEffect(
+    () => () => {
+      if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
+    },
+    [],
+  );
 
   React.useEffect(() => {
     if (typeof window.matchMedia !== "function") return;
@@ -85,9 +95,13 @@ export const DualEditor = ({
     (nextContent: string) => {
       if (nextContent === editorContentRef.current) return;
       editorContentRef.current = nextContent;
-      setEditorContent(nextContent);
-      setDiagramContent(nextContent);
-      onContentChange?.(nextContent);
+      if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
+      diagramUpdateTimeoutRef.current = setTimeout(() => {
+        setEditorContent(nextContent);
+        setDiagramContent(nextContent);
+        diagramUpdateTimeoutRef.current = null;
+        onContentChange?.(nextContent);
+      }, TEXT_TO_DIAGRAM_DEBOUNCE_MS);
     },
     [onContentChange],
   );
@@ -95,6 +109,7 @@ export const DualEditor = ({
   const handleDiagramContentChange = React.useCallback(
     (nextContent: string) => {
       if (nextContent === editorContentRef.current) return;
+      if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
       editorContentRef.current = nextContent;
       setEditorContent(nextContent);
       setDiagramContent(nextContent);
