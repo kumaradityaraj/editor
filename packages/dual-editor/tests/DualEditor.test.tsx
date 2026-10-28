@@ -40,11 +40,11 @@ vi.mock("@openworkflowspec/text-editor", () => ({
 vi.mock("@openworkflowspec/diagram-editor", () => ({
   DiagramEditor: ({
     content,
-    contentFormat,
+    language,
     onContentChange,
   }: {
     content: string;
-    contentFormat?: "json" | "yaml";
+    language?: "json" | "yaml";
     onContentChange?: (content: string) => void;
   }) => {
     const [diagramContent, setDiagramContent] = useState(content);
@@ -54,7 +54,7 @@ vi.mock("@openworkflowspec/diagram-editor", () => ({
       <textarea
         aria-label="Diagram source"
         data-testid="diagram-source"
-        data-format={contentFormat}
+        data-format={language}
         value={diagramContent}
         onChange={(event) => {
           const nextContent = event.currentTarget.value;

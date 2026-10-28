@@ -54,7 +54,7 @@ export const DiagramEditorContextProvider = React.forwardRef<
   const [detectedContentFormat, setDetectedContentFormat] = React.useState<ContentFormat>(
     props.content.trimStart().startsWith("{") ? "json" : "yaml",
   );
-  const contentFormat = props.contentFormat ?? detectedContentFormat;
+  const contentFormat = props.language ?? detectedContentFormat;
 
   // Config state (non-history)
   const [locale, setLocale] = React.useState<string>(props.locale);
