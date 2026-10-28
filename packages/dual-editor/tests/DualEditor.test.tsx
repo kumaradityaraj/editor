@@ -127,7 +127,7 @@ describe("DualEditor", () => {
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "first edit" },
     });
-    act(() => vi.advanceTimersByTime(900));
+    act(() => vi.advanceTimersByTime(2900));
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "edited in text" },
     });
@@ -136,7 +136,7 @@ describe("DualEditor", () => {
     expect(screen.getByTestId("text-source")).toHaveValue("edited in text");
     expect(onContentChange).not.toHaveBeenCalled();
 
-    act(() => vi.advanceTimersByTime(999));
+    act(() => vi.advanceTimersByTime(2999));
     expect(screen.getByTestId("diagram-source")).toHaveValue("initial workflow");
     expect(onContentChange).not.toHaveBeenCalled();
 
@@ -144,6 +144,38 @@ describe("DualEditor", () => {
     expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
     expect(onContentChange).toHaveBeenCalledTimes(1);
     expect(onContentChange).toHaveBeenCalledWith("edited in text");
+    vi.useRealTimers();
+  });
+
+  it("applies external content to the text editor while cancelling a pending diagram update", () => {
+    const onContentChange = vi.fn();
+    const { rerender } = renderDualEditor({ content: "A", onContentChange });
+    vi.useFakeTimers();
+
+    fireEvent.change(screen.getByTestId("text-source"), {
+      target: { value: "B" },
+    });
+    act(() => vi.advanceTimersByTime(3000));
+
+    fireEvent.change(screen.getByTestId("text-source"), {
+      target: { value: "C" },
+    });
+    expect(screen.getByTestId("text-source")).toHaveValue("C");
+
+    rerender(
+      <DualEditor
+        content="B"
+        createLanguageServiceWorker={createLanguageServiceWorker}
+        onContentChange={onContentChange}
+      />,
+    );
+
+    expect(screen.getByTestId("text-source")).toHaveValue("B");
+    expect(screen.getByTestId("diagram-source")).toHaveValue("B");
+
+    act(() => vi.advanceTimersByTime(3000));
+    expect(onContentChange).toHaveBeenCalledTimes(1);
+    expect(onContentChange).toHaveBeenCalledWith("B");
     vi.useRealTimers();
   });
 
@@ -166,7 +198,7 @@ describe("DualEditor", () => {
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "edited in text" },
     });
-    act(() => vi.advanceTimersByTime(1000));
+    act(() => vi.advanceTimersByTime(3000));
     expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
 
     fireEvent.change(screen.getByTestId("diagram-source"), {
@@ -177,7 +209,7 @@ describe("DualEditor", () => {
     fireEvent.change(screen.getByTestId("text-source"), {
       target: { value: "edited in text" },
     });
-    act(() => vi.advanceTimersByTime(1000));
+    act(() => vi.advanceTimersByTime(3000));
     expect(screen.getByTestId("diagram-source")).toHaveValue("edited in text");
     vi.useRealTimers();
   });

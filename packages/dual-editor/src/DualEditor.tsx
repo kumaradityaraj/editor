@@ -95,9 +95,9 @@ export const DualEditor = ({
     (nextContent: string) => {
       if (nextContent === editorContentRef.current) return;
       editorContentRef.current = nextContent;
+      setEditorContent(nextContent);
       if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
       diagramUpdateTimeoutRef.current = setTimeout(() => {
-        setEditorContent(nextContent);
         setDiagramContent(nextContent);
         diagramUpdateTimeoutRef.current = null;
         onContentChange?.(nextContent);

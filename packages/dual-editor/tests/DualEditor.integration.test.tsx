@@ -70,7 +70,9 @@ describe("DualEditor with the real editor components", () => {
       simulateMonacoEdit(editedWorkflow);
     });
 
-    await waitFor(() => expect(document.querySelectorAll(".react-flow__node")).toHaveLength(3));
+    await waitFor(() => expect(document.querySelectorAll(".react-flow__node")).toHaveLength(3), {
+      timeout: 6000,
+    });
     expect(onContentChange).toHaveBeenCalledWith(editedWorkflow);
-  });
+  }, 10_000);
 });
