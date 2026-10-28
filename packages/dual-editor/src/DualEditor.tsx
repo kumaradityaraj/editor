@@ -56,13 +56,20 @@ export const DualEditor = ({
   const [diagramContent, setDiagramContent] = React.useState(content);
   const editorContentRef = React.useRef(content);
   const diagramUpdateTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingTextContentRef = React.useRef<string | null>(null);
+  const onContentChangeRef = React.useRef(onContentChange);
   const [split, setSplit] = React.useState(DEFAULT_SPLIT);
   const [isDragging, setIsDragging] = React.useState(false);
   const [isStacked, setIsStacked] = React.useState(false);
 
   React.useEffect(() => {
+    onContentChangeRef.current = onContentChange;
+  }, [onContentChange]);
+
+  React.useEffect(() => {
     if (content === editorContentRef.current) return;
     if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
+    pendingTextContentRef.current = null;
     editorContentRef.current = content;
     setEditorContent(content);
     setDiagramContent(content);
@@ -71,6 +78,9 @@ export const DualEditor = ({
   React.useEffect(
     () => () => {
       if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
+      const pendingContent = pendingTextContentRef.current;
+      pendingTextContentRef.current = null;
+      if (pendingContent !== null) onContentChangeRef.current?.(pendingContent);
     },
     [],
   );
@@ -91,32 +101,29 @@ export const DualEditor = ({
     onSplitChange?.(nextSplit);
   };
 
-  const handleTextContentChange = React.useCallback(
-    (nextContent: string) => {
-      if (nextContent === editorContentRef.current) return;
-      editorContentRef.current = nextContent;
-      setEditorContent(nextContent);
-      if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
-      diagramUpdateTimeoutRef.current = setTimeout(() => {
-        setDiagramContent(nextContent);
-        diagramUpdateTimeoutRef.current = null;
-        onContentChange?.(nextContent);
-      }, TEXT_TO_DIAGRAM_DEBOUNCE_MS);
-    },
-    [onContentChange],
-  );
-
-  const handleDiagramContentChange = React.useCallback(
-    (nextContent: string) => {
-      if (nextContent === editorContentRef.current) return;
-      if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
-      editorContentRef.current = nextContent;
-      setEditorContent(nextContent);
+  const handleTextContentChange = React.useCallback((nextContent: string) => {
+    if (nextContent === editorContentRef.current) return;
+    editorContentRef.current = nextContent;
+    setEditorContent(nextContent);
+    if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
+    pendingTextContentRef.current = nextContent;
+    diagramUpdateTimeoutRef.current = setTimeout(() => {
+      diagramUpdateTimeoutRef.current = null;
+      pendingTextContentRef.current = null;
       setDiagramContent(nextContent);
-      onContentChange?.(nextContent);
-    },
-    [onContentChange],
-  );
+      onContentChangeRef.current?.(nextContent);
+    }, TEXT_TO_DIAGRAM_DEBOUNCE_MS);
+  }, []);
+
+  const handleDiagramContentChange = React.useCallback((nextContent: string) => {
+    if (nextContent === editorContentRef.current) return;
+    if (diagramUpdateTimeoutRef.current) clearTimeout(diagramUpdateTimeoutRef.current);
+    pendingTextContentRef.current = null;
+    editorContentRef.current = nextContent;
+    setEditorContent(nextContent);
+    setDiagramContent(nextContent);
+    onContentChangeRef.current?.(nextContent);
+  }, []);
 
   const setSplitFromPointer = (coordinate: number) => {
     const bounds = containerRef.current?.getBoundingClientRect();

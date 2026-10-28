@@ -179,6 +179,23 @@ describe("DualEditor", () => {
     vi.useRealTimers();
   });
 
+  it("notifies the host of a pending text edit when unmounted", () => {
+    const onContentChange = vi.fn();
+    const { unmount } = renderDualEditor({ onContentChange });
+    vi.useFakeTimers();
+
+    fireEvent.change(screen.getByTestId("text-source"), {
+      target: { value: "final edit" },
+    });
+    expect(onContentChange).not.toHaveBeenCalled();
+
+    unmount();
+
+    expect(onContentChange).toHaveBeenCalledOnce();
+    expect(onContentChange).toHaveBeenCalledWith("final edit");
+    vi.useRealTimers();
+  });
+
   it("syncs diagram edits to the text and reports content changes", () => {
     const onContentChange = vi.fn();
     renderDualEditor({ onContentChange });
@@ -189,6 +206,27 @@ describe("DualEditor", () => {
 
     expect(screen.getByTestId("text-source")).toHaveValue("edited in diagram");
     expect(onContentChange).toHaveBeenCalledWith("edited in diagram");
+  });
+
+  it("uses the latest content change callback for diagram edits", () => {
+    const previousCallback = vi.fn();
+    const latestCallback = vi.fn();
+    const { rerender } = renderDualEditor({ onContentChange: previousCallback });
+
+    rerender(
+      <DualEditor
+        content="initial workflow"
+        createLanguageServiceWorker={createLanguageServiceWorker}
+        onContentChange={latestCallback}
+      />,
+    );
+
+    fireEvent.change(screen.getByTestId("diagram-source"), {
+      target: { value: "edited in diagram" },
+    });
+
+    expect(previousCallback).not.toHaveBeenCalled();
+    expect(latestCallback).toHaveBeenCalledWith("edited in diagram");
   });
 
   it("resyncs the diagram after undo followed by a text edit", () => {
